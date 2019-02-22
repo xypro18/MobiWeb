@@ -39,29 +39,32 @@
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center">
+
                     <h:form>
+
                         <h:panelGrid id="grid" columns="5" cellpadding="5" >
                             <p:outputLabel for="in_cat" value="#{msg.category}:" style="display:block;width:120px" />
-                            <p:selectOneMenu id="sel_cat" value="#{category.country}" style="width:200px">
-                                <p:ajax listener="#{category.onCountryChange}" update="grid" />
+                            <p:selectOneMenu id="sel_cat" value="#{category.sel_cat}" style="width:200px">
+                                <p:ajax listener="#{category.onSelectionChange}" update="grid" />
                                 <f:selectItem itemLabel="#{msg.select_category}" itemValue="" noSelectionOption="true" />
-                                <f:selectItems value="#{category.countries}" />
-                            </p:selectOneMenu>
-                            <p:inputText id="in_cat" value="#{category.main}" required="true" />    
-                            <p:commandButton value="#{msg.add}" update="grid" />
+                                <f:selectItems value="#{category.map_cat}" />
+                            </p:selectOneMenu>                        
+                            <p:inputText id="in_cat" value="#{category.add_cat}" required="true" />    
+                            <p:commandButton value="#{msg.add}" update="grid" action="#{category.addCategory}" />
                             <p:message for="in_cat" display="text"/>
-                            
                             <p:outputLabel for="in_subcat" value="#{msg.subcategory}:" rendered="#{category.renderSub}" />
-                            <p:selectOneMenu id="sel_subcat" value="#{category.city}" style="width:200px" rendered="#{category.renderSub}">
+                            <p:selectOneMenu id="sel_subcat" value="#{category.sel_sub}" style="width:200px" rendered="#{category.renderSub}">
                                 <f:selectItem itemLabel="#{category.sel_sub}" itemValue="" noSelectionOption="true" />
-                                <f:selectItems value="#{category.cities}" />
+                                <f:selectItems value="#{category.map_sub}" />
                             </p:selectOneMenu>
-                            <p:inputText id="in_subcat" value="#{category.sub}" required="true" rendered="#{category.renderSub}" />    
+                            <p:inputText id="in_subcat" value="#{category.add_sub}" required="true" rendered="#{category.renderSub}" /> 
                             <p:commandButton value="#{msg.add}" update="grid" rendered="#{category.renderSub}" />
                             <p:message for="in_subcat" display="text" rendered="#{category.renderSub}"/>
+   
 
-                        </h:panelGrid>                        
-                    </h:form>
+                        </h:panelGrid>
+                    </h:form>                        
+
                 </p:layoutUnit>
 
             </p:layout>

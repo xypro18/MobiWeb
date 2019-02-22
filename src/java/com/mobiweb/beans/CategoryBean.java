@@ -5,6 +5,8 @@
  */
 package com.mobiweb.beans;
 
+import com.mobiweb.exceptions.ItemException;
+import com.mobiweb.entities.Categoria;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
@@ -22,18 +25,68 @@ import javax.inject.Named;
 @SessionScoped
 public class CategoryBean implements Serializable {
 
-    private String main;
-    private String sub;
-    private String sel_main;
+    private String sel_cat;
     private String sel_sub;
+    private String add_cat;
+    private String add_sub;
     private boolean renderSub = false;
+    private List<Categoria> lcat = null;
 
-    public String getSel_main() {
-        return sel_main;
+    private Map<String, Map<String, String>> data = new HashMap<String, Map<String, String>>();
+//    private String country;
+//    private String city;
+    private Map<String, String> map_cat;
+    private Map<String, String> map_sub;
+
+    @Inject
+    ItemEJB itembean;
+
+    @PostConstruct
+    public void init() {
+//        sel_main = getCategoryMessage();
+//        sel_sub = getSubCategoryMessage();
+        genrateCategories();
+
     }
 
-    public void setSel_main(String sel_main) {
-        this.sel_main = sel_main;
+    public void addCategory() throws ItemException {
+        Categoria item = new Categoria(itembean.count() + 1, add_cat);
+        itembean.addCategory(item);
+        genrateCategories();
+        sel_cat = add_cat;
+        add_cat = "";
+    }
+
+    private void genrateCategories() {
+        lcat = itembean.getAllItems();
+        map_cat = new HashMap<String, String>();
+        for (Categoria c : lcat) {
+            map_cat.put(c.getName(), c.getName());
+        }
+    }
+
+    public Map<String, String> getMap_cat() {
+        return map_cat;
+    }
+
+    public void setMap_cat(Map<String, String> map_cat) {
+        this.map_cat = map_cat;
+    }
+
+    public Map<String, String> getMap_sub() {
+        return map_sub;
+    }
+
+    public void setMap_sub(Map<String, String> map_sub) {
+        this.map_sub = map_sub;
+    }
+
+    public String getAdd_sub() {
+        return add_sub;
+    }
+
+    public void setAdd_sub(String add_sub) {
+        this.add_sub = add_sub;
     }
 
     public String getSel_sub() {
@@ -52,91 +105,53 @@ public class CategoryBean implements Serializable {
         this.renderSub = renderSub;
     }
 
-    public String getMain() {
-        return main;
+    public String getSel_cat() {
+        return sel_cat;
     }
 
-    public void setMain(String main) {
-        this.main = main;
+    public void setSel_cat(String sel_cat) {
+        this.sel_cat = sel_cat;
     }
 
-    public String getSub() {
-        return sub;
+    public String getAdd_cat() {
+        return add_cat;
     }
 
-    public void setSub(String sub) {
-        this.sub = sub;
+    public void setAdd_cat(String add_cat) {
+        this.add_cat = add_cat;
     }
 
-    private Map<String, Map<String, String>> data = new HashMap<String, Map<String, String>>();
-    private String country;
-    private String city;
-    private Map<String, String> countries;
-    private Map<String, String> cities;
-
-    @PostConstruct
-    public void init() {
-//        sel_main = getCategoryMessage();
-//        sel_sub = getSubCategoryMessage();
-
-        countries = new HashMap<String, String>();
-        countries.put("USA", "USA");
-        countries.put("Germany", "Germany");
-        countries.put("Brazil", "Brazil");
-
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("New York", "New York");
-        map.put("San Francisco", "San Francisco");
-        map.put("Denver", "Denver");
-        data.put("USA", map);
-
-        map = new HashMap<String, String>();
-        map.put("Berlin", "Berlin");
-        map.put("Munich", "Munich");
-        map.put("Frankfurt", "Frankfurt");
-        data.put("Germany", map);
-
-        map = new HashMap<String, String>();
-        map.put("Sao Paulo", "Sao Paulo");
-        map.put("Rio de Janerio", "Rio de Janerio");
-        map.put("Salvador", "Salvador");
-        data.put("Brazil", map);
-    }
-
-    public Map<String, Map<String, String>> getData() {
-        return data;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public Map<String, String> getCountries() {
-        return countries;
-    }
-
-    public Map<String, String> getCities() {
-        return cities;
-    }
-
-    public void onCountryChange() {
-        if (country != null && !country.equals("")) {
-            cities = data.get(country);
+//    public Map<String, Map<String, String>> getData() {
+//        return data;
+//    }
+//    public String getCountry() {
+//        return country;
+//    }
+//
+//    public void setCountry(String country) {
+//        this.country = country;
+//    }
+//
+//    public String getCity() {
+//        return city;
+//    }
+//
+//    public void setCity(String city) {
+//        this.city = city;
+//    }
+//    public Map<String, String> getCountries() {
+//        return countries;
+//    }
+//
+//    public Map<String, String> getCities() {
+//        return cities;
+//    }
+    public void onSelectionChange() {
+        if (sel_cat != null && !sel_cat.equals("")) {
+//            cities = data.get(country);
             renderSub = true;
         } else {
-            cities = new HashMap<String, String>();
+//            cities = new HashMap<String, String>();
             renderSub = false;
         }
 
@@ -157,5 +172,4 @@ public class CategoryBean implements Serializable {
 //    private String getSubCategoryMessage() {
 //        return getMessage("select_subcategory");
 //    }
-
 }
