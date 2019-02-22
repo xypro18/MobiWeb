@@ -3,6 +3,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui">
 
     <f:view contentType="text/html">
@@ -41,8 +42,9 @@
                 <p:layoutUnit position="center">
 
                     <h:form>
-
+                        
                         <h:panelGrid id="grid" columns="5" cellpadding="5" >
+                            
                             <p:outputLabel for="in_cat" value="#{msg.category}:" style="display:block;width:120px" />
                             <p:selectOneMenu id="sel_cat" value="#{category.sel_cat}" style="width:200px">
                                 <p:ajax listener="#{category.onSelectionChange}" update="grid" />
@@ -52,15 +54,16 @@
                             <p:inputText id="in_cat" value="#{category.add_cat}" required="true" />    
                             <p:commandButton value="#{msg.add}" update="grid" action="#{category.addCategory}" />
                             <p:message for="in_cat" display="text"/>
-                            <p:outputLabel for="in_subcat" value="#{msg.subcategory}:" rendered="#{category.renderSub}" />
-                            <p:selectOneMenu id="sel_subcat" value="#{category.sel_sub}" style="width:200px" rendered="#{category.renderSub}">
+                            <c:if test="#{category.renderSub}">
+                            <p:outputLabel for="in_subcat" value="#{msg.subcategory}:"  />
+                            <p:selectOneMenu id="sel_subcat" value="#{category.sel_sub}" style="width:200px">
                                 <f:selectItem itemLabel="#{category.sel_sub}" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{category.map_sub}" />
                             </p:selectOneMenu>
-                            <p:inputText id="in_subcat" value="#{category.add_sub}" required="true" rendered="#{category.renderSub}" /> 
-                            <p:commandButton value="#{msg.add}" update="grid" rendered="#{category.renderSub}" />
-                            <p:message for="in_subcat" display="text" rendered="#{category.renderSub}"/>
-   
+                            <p:inputText id="in_subcat" value="#{category.add_sub}" required="true" /> 
+                            <p:commandButton value="#{msg.add}" update="grid" />
+                            <p:message for="in_subcat" display="text"/>
+                            </c:if>   
 
                         </h:panelGrid>
                     </h:form>                        

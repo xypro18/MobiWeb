@@ -1,0 +1,5 @@
+Realms:
+https://docs.oracle.com/middleware/1221/biee/BIESC/privileges.htm#BIESC6096
+
+DAO Generic:
+https://www.baeldung.com/simplifying-the-data-access-layer-with-spring-and-java-generics

@@ -7,6 +7,7 @@ package com.mobiweb.beans;
 
 import com.mobiweb.exceptions.ItemException;
 import com.mobiweb.entities.Categoria;
+import com.mobiweb.entities.Subcategoria;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,9 @@ public class CategoryBean implements Serializable {
     private String add_sub;
     private boolean renderSub = false;
     private List<Categoria> lcat = null;
+    private List<Subcategoria> lsub = null;
+    private Categoria cat = null;
+    private Subcategoria sub = null;
 
     private Map<String, Map<String, String>> data = new HashMap<String, Map<String, String>>();
 //    private String country;
@@ -39,29 +43,44 @@ public class CategoryBean implements Serializable {
     private Map<String, String> map_sub;
 
     @Inject
-    ItemEJB itembean;
+    GenericJpaDao itembean;
 
     @PostConstruct
     public void init() {
-//        sel_main = getCategoryMessage();
-//        sel_sub = getSubCategoryMessage();
-        genrateCategories();
-
+        generateCategories();
     }
 
-    public void addCategory() throws ItemException {
-        Categoria item = new Categoria(itembean.count() + 1, add_cat);
-        itembean.addCategory(item);
-        genrateCategories();
+    public void addCategory() {
+        cat = new Categoria(itembean.count(Categoria.class) + 1, add_cat);
+        itembean.save(cat);
+        generateCategories();
         sel_cat = add_cat;
         add_cat = "";
+        generateSubCategories();
     }
+    
+    public void addSubCategory() {
+        sub = new Subcategoria(itembean.count(Subcategoria.class) + 1, add_sub, cat.getId());
+        itembean.save(sub);
+        generateSubCategories();
+        sel_sub = add_sub;
+        add_sub = "";        
+    }
+    
 
-    private void genrateCategories() {
-        lcat = itembean.getAllItems();
+    private void generateCategories() {
+        lcat = itembean.findAll(Categoria.class);
         map_cat = new HashMap<String, String>();
         for (Categoria c : lcat) {
             map_cat.put(c.getName(), c.getName());
+        }
+    }
+    
+    private void generateSubCategories() {
+        lsub = itembean.findAll(Subcategoria.class);
+        map_sub = new HashMap<String, String>();
+        for (Subcategoria s : lsub) {
+            map_sub.put(s.getName(), s.getName());
         }
     }
 

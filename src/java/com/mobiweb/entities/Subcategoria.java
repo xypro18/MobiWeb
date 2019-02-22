@@ -76,6 +76,11 @@ public class Subcategoria implements Serializable {
         this.name = name;
     }
 
+    public Subcategoria(Integer id, String name, Integer fk) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -149,5 +154,5 @@ public class Subcategoria implements Serializable {
     public String toString() {
         return "com.mobiweb.entities.Subcategoria[ id=" + id + " ]";
     }
-    
+
 }
