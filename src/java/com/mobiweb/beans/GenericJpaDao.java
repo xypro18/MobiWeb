@@ -16,6 +16,7 @@ public class GenericJpaDao<T extends Serializable> {
 
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
+    
 
     public T findOne(Class<T> clazz, Long id) {
         return em.find(clazz, id);
