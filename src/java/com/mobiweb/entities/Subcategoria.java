@@ -76,9 +76,10 @@ public class Subcategoria implements Serializable {
         this.name = name;
     }
 
-    public Subcategoria(Integer id, String name, Integer fk) {
+    public Subcategoria(Integer id, String name, Categoria cat) {
         this.id = id;
         this.name = name;
+        this.catId = cat;
     }
 
     public Integer getId() {

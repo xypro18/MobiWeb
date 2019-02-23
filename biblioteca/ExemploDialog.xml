@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/template/template.xhtml">
+    <ui:define name="conteudo">
+        <div class="ui-fluid">
+            <h:form id="formularioTabela">
+                <p:growl id="mensagem" showDetail="true" sticky="true" />
+                <p:dataTable id="tabelaFornecedores" paginator="true" rows="8"
+                    value="#{fornecedorBean.fornecedores}" var="fornecedor"
+                    emptyMessage="Nenhum fornecedor encontrado">
+                    <f:facet name="header">Tabela Fornecedor</f:facet>
+                    <f:facet name="footer">
+                        <p:commandButton value="Novo" onclick="PF('novo').show();"
+                            update=":dialogFornecedor" />
+                    </f:facet>
+
+                    <p:column headerText="Codigo" filterBy="#{fornecedor.codigo}"
+                        filterMatchMode="contains" sortBy="#{fornecedor.codigo}"
+                        style="width: 10%">
+                        <h:outputText value="#{fornecedor.codigo}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição" filterBy="#{fornecedor.descricao}"
+                        filterMatchMode="contains" sortBy="#{fornecedor.descricao}">
+                        <h:outputText value="#{fornecedor.descricao}" />
+                    </p:column>
+
+
+                    <p:column headerText="opção">
+                        <h:panelGrid columns="2">
+                            <p:commandButton update=":teste" icon="fa fa-fw fa-remove"
+                                onclick="PF('excluir').show();" />
+                        </h:panelGrid>
+                    </p:column>
+
+
+
+
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog appendTo="@(body)" draggable="false" resizable="false"
+                closable="true" widgetVar="novo" header="Adicionar Fornecedor"
+                modal="true">
+                <h:form id="dialogFornecedor">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Descrição: " for="descricao" />
+                        <p:inputText id="descricao"
+                            value="#{fornecedorBean.fornecedor.descricao}" size="40" />
+                    </h:panelGrid>
+                    <p:commandButton value="Salvar"
+                        actionListener="#{fornecedorBean.salvar}"
+                        update=":formularioTabela" oncomplete="PF('novo').hide();" />
+                    <p:commandButton value="Cancelar" onclick="PF('novo').hide();" />
+                </h:form>
+            </p:dialog>
+
+            <p:dialog appendTo="@(body)" draggable="false" resizable="false"
+                closable="true" widgetVar="excluir" header="Deseja Excluir?"
+                modal="true">
+
+                <h:form id="teste">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="Descrição: " />
+                        <p:inputText value="#{fornecedorBean.fornecedor.descricao}"/>
+                    </h:panelGrid>
+                    <p:commandButton value="Sim"
+                        actionListener="#{fornecedorBean.teste}" />
+                </h:form>
+            </p:dialog>
+
+
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -26,24 +27,26 @@ import javax.inject.Named;
 @SessionScoped
 public class CategoryBean implements Serializable {
 
+    //Variáveis expostas ao xhtml
     private String sel_cat;
     private String sel_sub;
     private String add_cat;
     private String add_sub;
     private boolean renderSub = false;
+    private Map<String, String> map_cat;
+    private Map<String, String> map_sub;
+    private Map<String, Categoria> map_test;
+    
+    //Variáveis internas ao bean
     private List<Categoria> lcat = null;
     private List<Subcategoria> lsub = null;
     private Categoria cat = null;
     private Subcategoria sub = null;
-
-    private Map<String, Map<String, String>> data = new HashMap<String, Map<String, String>>();
-//    private String country;
-//    private String city;
-    private Map<String, String> map_cat;
-    private Map<String, String> map_sub;
+    private int id_cat;
+    private int id_sub;
 
     @Inject
-    GenericJpaDao itembean;
+    GenericJpaDao dao;
 
     @PostConstruct
     public void init() {
@@ -51,17 +54,23 @@ public class CategoryBean implements Serializable {
     }
 
     public void addCategory() {
-        cat = new Categoria(itembean.count(Categoria.class) + 1, add_cat);
-        itembean.save(cat);
+        cat = new Categoria(dao.count(Categoria.class) + 1, add_cat);
+        dao.save(cat);
         generateCategories();
         sel_cat = add_cat;
+        renderSub = true;
         add_cat = "";
         generateSubCategories();
     }
     
+    public void addCategory(boolean reset) {
+        if (reset)
+            add_cat = "";
+    }
+    
     public void addSubCategory() {
-        sub = new Subcategoria(itembean.count(Subcategoria.class) + 1, add_sub, cat.getId());
-        itembean.save(sub);
+        sub = new Subcategoria(dao.count(Subcategoria.class) + 1, add_sub, cat);
+        dao.save(sub);
         generateSubCategories();
         sel_sub = add_sub;
         add_sub = "";        
@@ -69,20 +78,34 @@ public class CategoryBean implements Serializable {
     
 
     private void generateCategories() {
-        lcat = itembean.findAll(Categoria.class);
+        lcat = dao.findAll(Categoria.class);
         map_cat = new HashMap<String, String>();
         for (Categoria c : lcat) {
             map_cat.put(c.getName(), c.getName());
         }
+       map_test = new TreeMap<String, Categoria>();
+        for (Categoria c : lcat) {
+            map_test.put(c.getName(), c);
+        }
     }
     
     private void generateSubCategories() {
-        lsub = itembean.findAll(Subcategoria.class);
+        lsub = dao.findAll(Subcategoria.class);
         map_sub = new HashMap<String, String>();
         for (Subcategoria s : lsub) {
             map_sub.put(s.getName(), s.getName());
         }
     }
+
+    public Map<String, Categoria> getMap_test() {
+        return map_test;
+    }
+
+    public void setMap_test(Map<String, Categoria> map_test) {
+        this.map_test = map_test;
+    }
+    
+    
 
     public Map<String, String> getMap_cat() {
         return map_cat;
@@ -140,31 +163,7 @@ public class CategoryBean implements Serializable {
         this.add_cat = add_cat;
     }
 
-//    public Map<String, Map<String, String>> getData() {
-//        return data;
-//    }
-//    public String getCountry() {
-//        return country;
-//    }
-//
-//    public void setCountry(String country) {
-//        this.country = country;
-//    }
-//
-//    public String getCity() {
-//        return city;
-//    }
-//
-//    public void setCity(String city) {
-//        this.city = city;
-//    }
-//    public Map<String, String> getCountries() {
-//        return countries;
-//    }
-//
-//    public Map<String, String> getCities() {
-//        return cities;
-//    }
+    
     public void onSelectionChange() {
         if (sel_cat != null && !sel_cat.equals("")) {
 //            cities = data.get(country);
