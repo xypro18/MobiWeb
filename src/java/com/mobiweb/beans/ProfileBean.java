@@ -5,10 +5,13 @@
  */
 package com.mobiweb.beans;
 
+import com.mobiweb.dao.EmpregadoDao;
+import com.mobiweb.entities.Empregado;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
 import java.util.Date;
+import javax.inject.Inject;
 
 /**
  *
@@ -23,12 +26,17 @@ public class ProfileBean implements Serializable {
     private String password;
     private Character sex;
     private Date dob;
+    
+    @Inject
+    EmpregadoDao empDao;
 
     public ProfileBean() {
     }
     
     public String validateLogin() {
-        return "home";
+        Empregado emp = new Empregado(empDao.count()+1, firstname, lastname, username, password, sex, dob);
+        empDao.save(emp);
+        return "index";
     }
     
     /////////////////////

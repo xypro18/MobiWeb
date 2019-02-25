@@ -5,16 +5,14 @@
  */
 package com.mobiweb.beans;
 
-import com.mobiweb.exceptions.ItemException;
+import com.mobiweb.dao.CategoriaDao;
+import com.mobiweb.dao.ProdutoDao;
+import com.mobiweb.dao.SubcategoriaDao;
 import com.mobiweb.entities.Categoria;
 import com.mobiweb.entities.Produto;
 import com.mobiweb.entities.Subcategoria;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -46,8 +44,9 @@ public class ProductBean implements Serializable {
     private Categoria cat = null;
     private Subcategoria sub = null;
 
-    @Inject
-    GenericJpaDao dao;
+    @Inject CategoriaDao daoCat;
+    @Inject SubcategoriaDao daoSub;
+    @Inject ProdutoDao daoProd;
 
     @PostConstruct
     public void init() {
@@ -60,9 +59,9 @@ public class ProductBean implements Serializable {
 
     public void addCategory() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        int id = dao.count(Categoria.class) + 1;
+        int id = daoCat.count()+1;
         cat = new Categoria(id, add_cat);
-        dao.save(cat);
+        daoCat.save(cat);
         generateCategories();
         id_cat = id;
         add_cat = "";
@@ -78,10 +77,10 @@ public class ProductBean implements Serializable {
 
     public void addSubCategory() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        int id = dao.count(Subcategoria.class) + 1;
-        Categoria c = (Categoria) dao.findOne(Categoria.class, id_cat);
+        int id = daoSub.count() + 1;
+        Categoria c = daoCat.findOne(id_cat);
         sub = new Subcategoria(id, add_sub, c);
-        dao.save(sub);
+        daoSub.save(sub);
         generateSubCategories();
         id_sub = id;
         add_sub = "";
@@ -90,17 +89,17 @@ public class ProductBean implements Serializable {
     
     public void addProduct() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Produto p = new Produto(dao.count(Produto.class) + 1, add_prod);
-        dao.save(p);
+        Produto p = new Produto(daoProd.count() + 1, add_prod);
+        daoProd.save(p);
         add_prod = "";
     }
 
     private void generateCategories() {
-        lcat = dao.findAll(Categoria.class);
+        lcat = daoCat.findAll();
     }
 
     private void generateSubCategories() {
-        lsub = dao.findByCatId(Subcategoria.class, id_cat);
+        lsub = daoSub.findByCatId(id_cat);
     }
 
     public void onCategoryChange() {

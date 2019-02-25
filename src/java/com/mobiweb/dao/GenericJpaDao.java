@@ -1,31 +1,34 @@
-package com.mobiweb.beans;
+package com.mobiweb.dao;
 
 import com.mobiweb.exceptions.ItemException;
 import com.mobiweb.entities.Categoria;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.List;
-import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
-@Stateless
-public class GenericJpaDao<T extends Serializable> {
-
+public abstract class GenericJpaDao<T extends Serializable> {
+    private Class< T > clazz;
+    
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
+    
+    public GenericJpaDao(Class< T > clazzToSet) {
+        this.clazz = clazzToSet;
+    }
+    
 
-    public T findOne(Class<T> clazz, int id) {
+
+    public T findOne(int id) {
         return em.find(clazz, id);
     }
 
-    public List<T> findAll(Class<T> clazz) {
+    public List<T> findAll() {
         return em.createNamedQuery(clazz.getSimpleName() + ".findAll").getResultList();
     }
 
-    public List<T> findByCatId(Class<T> clazz, int fk) {
+    public List<T> findByCatId(int fk) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", fk).getResultList();
     }
 
@@ -42,8 +45,8 @@ public class GenericJpaDao<T extends Serializable> {
         em.remove(entity);
     }
 
-    public void deleteById(Class<T> clazz, int entityId) {
-        T entity = findOne(clazz, entityId);
+    public void deleteById(int entityId) {
+        T entity = findOne(entityId);
         delete(entity);
     }
 
@@ -84,7 +87,7 @@ public class GenericJpaDao<T extends Serializable> {
 //        List<Categoria> allItems = query.getResultList();
 //        return allItems;
 //    }
-    public int count(Class<T> clazz) {
+    public int count() {
         javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         javax.persistence.criteria.Root<Categoria> rt = cq.from(clazz);
         cq.select(em.getCriteriaBuilder().count(rt));
