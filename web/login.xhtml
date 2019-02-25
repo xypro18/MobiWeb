@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:form>
+        <h:panelGrid id="grid" columns="3" cellpadding="5">
+            <p:outputLabel for="username" value="#{msg.username}:" />
+            <p:inputText id="username" value="#{login.username}" required="true" label="username" />
+            <p:message for="username" display="text"/>
+            <p:outputLabel for="password" value="#{msg.password}:" />
+            <p:password id="password" value="#{login.password}" required="true" label="password" />
+            <p:message for="password" display="text"/>
+            <p:commandButton value="#{msg.login}" action="#{login.validateLogin}" update="grid" />
+            <p:commandButton immediate="true" value="#{msg.register}" action="#{navigation.setCenterPage('profile')}" update=":layout_center" ajax="false" />
+        </h:panelGrid>
+    </h:form>
+</html>
+

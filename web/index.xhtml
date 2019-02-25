@@ -9,7 +9,7 @@
     <f:view contentType="text/html">
 
         <h:head>
-
+            <script name="jquery/jquery.js" library="primefaces"></script>
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
                 <title>#{msg.appTitle}</title>
@@ -20,82 +20,18 @@
 
             <p:layout fullPage="true">
 
-                <p:layoutUnit position="north" size="100" resizable="true" closable="true" collapsible="true">
-                    #{msg.appName}:#{msg.title_home}
+                <p:layoutUnit position="north" size="100" >
+                    #{msg.appName}:#{msg.title_home}                    
                 </p:layoutUnit>
 
-                <p:layoutUnit position="south" size="100" closable="true" collapsible="true">
-                    Footer
-                </p:layoutUnit>
-
-                <p:layoutUnit position="west" size="175" header="Left" collapsible="true">
-                    <p:menu>
-                        <p:submenu label="Resources">
-                            <p:menuitem value="Demo" url="http://www.primefaces.org/showcase-labs/ui/home.jsf" />
-                            <p:menuitem value="Documentation" url="http://www.primefaces.org/documentation.html" />
-                            <p:menuitem value="Forum" url="http://forum.primefaces.org/" />
-                            <p:menuitem value="Themes" url="http://www.primefaces.org/themes.html" />
-
-                        </p:submenu>
-
-                    </p:menu>
+                <p:layoutUnit position="west" size="250" header="Menu" collapsible="false">
+                    <ui:include src="sideBarLeft.xhtml"></ui:include>
                 </p:layoutUnit>
 
                 <p:layoutUnit position="center">
-
-                    <h:form id="mainform">
-                        <h:panelGrid id="grid" columns="3" cellpadding="5" >
-
-                            <p:outputLabel value="#{msg.category}:" style="display:block;width:120px" />
-                            <p:selectOneMenu id="sel_cat" value="#{category.sel_cat}" style="width:200px">
-                                <p:ajax listener="#{category.onSelectionChange}" update="grid" />
-                                <f:selectItem itemLabel="#{msg.select} #{msg.category}" itemValue="" noSelectionOption="true" />
-                                <f:selectItems value="#{category.map_test}" />
-                            </p:selectOneMenu>                        
-
-                            <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="width:30px;" onclick="PF('dlg_cat').show();" />
-
-                            <c:if test="#{category.renderSub}">
-                                <p:outputLabel value="#{msg.subcategory}:"  />
-                                <p:selectOneMenu id="sel_subcat" value="#{category.sel_sub}" style="width:200px">
-                                    <f:selectItem itemLabel="#{category.sel_sub}" itemValue="" noSelectionOption="true" />
-                                    <f:selectItems value="#{category.map_sub}" />
-                                </p:selectOneMenu>
-                                <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="width:30px;" onclick="PF('dlg_sub').show();" />
-
-                            </c:if>   
-
-                        </h:panelGrid>
-
-
-                    </h:form>
-
-                    <p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlg_cat" modal="true" resizable="false" appendTo="@(body)"> 
-                        <h:form id="frm_cat">
-                            <p:outputLabel for="in_cat" value="#{msg.add} #{msg.category}:" />
-                            <p:inputText id="in_cat" value="#{category.add_cat}" required="true" />
-                            <br/>
-                            <p:message for="in_cat" display="text"/>
-                            <br/>
-                            <p:commandButton value="#{msg.add}" action="#{category.addCategory}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_cat').hide()" update=":mainform frm_cat"/>
-                            <p:commandButton value="#{msg.cancel}" action="#{category.addCategory(true)}" onclick="PF('dlg_cat').hide()" update="frm_cat" immediate="true"/>
-                        </h:form>
-                    </p:dialog>
-
-                    <p:dialog header="#{msg.add} #{msg.subcategory}" widgetVar="dlg_sub" modal="true" resizable="false" appendTo="@(body)"> 
-                        <h:form id="frm_sub">
-                            <p:outputLabel for="in_sub" value="#{msg.add} #{msg.subcategory}:" />
-                            <p:inputText id="in_sub" value="#{category.add_sub}" required="true" />
-                            <br/>
-                            <p:message for="in_sub" display="text"/>
-                            <br/>
-                            <p:commandButton value="#{msg.add}" action="#{category.addSubCategory()}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_sub').hide()" update=":mainform frm_sub"/>
-                            <p:commandButton value="#{msg.cancel}" onclick="PF('dlg_sub').hide()" />
-                        </h:form>
-                    </p:dialog>
-
-
-
+                    <p:panel id="layout_center" style="border:none;">
+                        <ui:include src="#{navigation.centerPage}.xhtml"></ui:include>
+                    </p:panel> 
                 </p:layoutUnit>
 
             </p:layout>

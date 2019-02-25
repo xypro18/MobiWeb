@@ -16,15 +16,17 @@ public class GenericJpaDao<T extends Serializable> {
 
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
-    
 
-    public T findOne(Class<T> clazz, Long id) {
+    public T findOne(Class<T> clazz, int id) {
         return em.find(clazz, id);
     }
 
     public List<T> findAll(Class<T> clazz) {
-        return em.createQuery("SELECT item FROM " + clazz.getName() + " AS item")
-                .getResultList();
+        return em.createNamedQuery(clazz.getSimpleName() + ".findAll").getResultList();
+    }
+
+    public List<T> findByCatId(Class<T> clazz, int fk) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", fk).getResultList();
     }
 
     public void save(T entity) {
@@ -40,7 +42,7 @@ public class GenericJpaDao<T extends Serializable> {
         em.remove(entity);
     }
 
-    public void deleteById(Class<T> clazz, Long entityId) {
+    public void deleteById(Class<T> clazz, int entityId) {
         T entity = findOne(clazz, entityId);
         delete(entity);
     }
@@ -82,7 +84,6 @@ public class GenericJpaDao<T extends Serializable> {
 //        List<Categoria> allItems = query.getResultList();
 //        return allItems;
 //    }
-
     public int count(Class<T> clazz) {
         javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         javax.persistence.criteria.Root<Categoria> rt = cq.from(clazz);

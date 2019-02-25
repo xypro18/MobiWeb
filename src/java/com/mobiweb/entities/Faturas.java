@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -45,7 +47,9 @@ public class Faturas implements Serializable {
     @NotNull
     @Column(name = "ID")
     private Integer id;
-    @Size(max = 30)
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 30)
     @Column(name = "CODE")
     private String code;
     @Column(name = "CREATED")
@@ -56,12 +60,23 @@ public class Faturas implements Serializable {
     private Date modified;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "fatId")
     private Collection<Linhasdefaturas> linhasdefaturasCollection;
+    @JoinColumn(name = "EMP_ID", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Empregado empId;
+    @JoinColumn(name = "PROD_ID", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Produto prodId;
 
     public Faturas() {
     }
 
     public Faturas(Integer id) {
         this.id = id;
+    }
+
+    public Faturas(Integer id, String code) {
+        this.id = id;
+        this.code = code;
     }
 
     public Integer getId() {
@@ -103,6 +118,22 @@ public class Faturas implements Serializable {
 
     public void setLinhasdefaturasCollection(Collection<Linhasdefaturas> linhasdefaturasCollection) {
         this.linhasdefaturasCollection = linhasdefaturasCollection;
+    }
+
+    public Empregado getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(Empregado empId) {
+        this.empId = empId;
+    }
+
+    public Produto getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(Produto prodId) {
+        this.prodId = prodId;
     }
 
     @Override

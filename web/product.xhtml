@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="frm_prod">
+        <p:messages for="mid" id="growl" showDetail="true" />
+        <p:commandButton type="button" icon="ui-icon ui-icon-circle-minus" style="width:25px;height:25px" action="#{product.info}" update="@form growl"/>
+
+        <h:panelGrid id="grid" columns="5" >
+
+            <p:outputLabel value="#{msg.category}:" style="display:block;width:120px" />
+            <p:selectOneMenu id="sel_cat" value="#{product.id_cat}" style="width:200px" >                                
+                <p:ajax listener="#{product.onCategoryChange}" update="frm_prod" />
+                <f:selectItem itemLabel="#{msg.select} #{msg.category}" itemValue="" noSelectionOption="true" />
+                <f:selectItems value="#{product.lcat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
+            </p:selectOneMenu> 
+
+            <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_cat').show();" />
+            <p:commandButton type="button" icon="ui-icon ui-icon-circle-minus" style="width:25px;height:25px" action="#{product.info}" />
+            <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="width:25px;height:25px" />
+
+            <c:if test="#{product.renderSub}">
+                <p:outputLabel value="#{msg.subcategory}:"  />
+                <p:selectOneMenu id="sel_subcat" value="#{product.id_sub}" style="width:200px">
+                    <p:ajax listener="#{product.onSubCategoryChange}" update="frm_prod" />
+                    <f:selectItem itemLabel="#{msg.select} #{msg.subcategory}" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{product.lsub}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
+                </p:selectOneMenu>
+                <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_sub').show();" />
+                <p:commandButton type="button" icon="ui-icon ui-icon-circle-minus" style="width:25px;height:25px" />
+                <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="width:25px;height:25px" />
+            </c:if>
+
+        </h:panelGrid>
+        <br/><br/>
+        <p:growl id="msgs" showDetail="true"/>
+
+        <p:commandButton type="button" value="#{msg.add} #{msg.product}" onclick="PF('dlg_prod').show();" rendered="#{product.renderProd}"/>
+        <br/><br/>
+        <p:dataTable id="produtos" var="p" value="#{product.lprod}" editable="true" style="margin-bottom:20px" rendered="#{product.renderProd}">
+            <f:facet name="header">
+                #{msg.table_products}
+            </f:facet>
+
+            <p:ajax event="rowEdit" listener="#{dtEditView.onRowEdit}" update=":frm_prod:msgs" />
+            <p:ajax event="rowEditCancel" listener="#{dtEditView.onRowCancel}" update=":frm_prod:msgs" />
+
+            <p:column headerText="#{msg.id}">
+                <p:cellEditor>
+                    <f:facet name="output"><h:outputText value="#{p.id}" /></f:facet>
+                    <f:facet name="input"><p:inputText id="modelInput" value="#{p.id}" style="width:100%"/></f:facet>
+                </p:cellEditor>
+            </p:column>
+
+            <p:column headerText="#{msg.name}">
+                <p:cellEditor>
+                    <f:facet name="output"><h:outputText value="#{p.name}" /></f:facet>
+                    <f:facet name="input"><p:inputText value="#{p.name}" style="width:100%" label="Year"/></f:facet>
+                </p:cellEditor>
+            </p:column>
+
+            <p:column headerText="#{msg.manager}">
+                <h:outputText value="Gestor" />
+            </p:column>
+
+            <p:column headerText="#{msg.invoices}">
+                <h:outputText value="Fatura" />
+            </p:column>
+
+            <p:column style="width:35px">
+                <p:rowEditor />
+            </p:column>
+        </p:dataTable>
+
+    </h:form>
+
+    <p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlg_cat" modal="true" resizable="false" appendTo="@(body)"> 
+        <h:form id="frm_cat">                            
+            <p:outputLabel for="in_cat" value="#{msg.add} #{msg.category}:" />
+            <p:inputText id="in_cat" value="#{product.add_cat}" required="true" />
+            <br/>
+            <p:message for="in_cat" display="text"/>
+            <br/>
+            <p:commandButton value="#{msg.add}" action="#{product.addCategory}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_cat').hide()" update=":frm_prod frm_cat"/>
+            <p:spacer width="20" />
+            <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_cat').hide()"/>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog header="#{msg.add} #{msg.subcategory}" widgetVar="dlg_sub" modal="true" resizable="false" appendTo="@(body)"> 
+        <h:form id="frm_sub">
+            <p:outputLabel for="in_sub" value="#{msg.add} #{msg.subcategory}:" />
+            <p:inputText id="in_sub" value="#{product.add_sub}" required="true" />
+            <br/>
+            <p:message for="in_sub" display="text"/>
+            <br/>
+            <p:commandButton value="#{msg.add}" action="#{product.addSubCategory}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_sub').hide()" update=":frm_prod frm_sub"/>
+            <p:spacer width="20" />
+            <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_sub').hide()"/>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog header="#{msg.add} #{msg.product}" widgetVar="dlg_prod" modal="true" resizable="false" appendTo="@(body)"> 
+        <h:form id="frm_dlg_prod">
+            <p:outputLabel for="in_prod" value="#{msg.add} #{msg.product}:" />
+            <p:inputText id="in_prod" value="#{product.add_prod}" required="true" />
+            <br/>
+            <p:message for="in_prod" display="text"/>
+            <br/>
+            <p:commandButton value="#{msg.add}" action="#{product.addProduct}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_prod').hide()" update=":frm_prod frm_dlg_prod"/>
+            <p:spacer width="20" />
+            <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_prod').hide()"/>
+        </h:form>
+    </p:dialog>
+
+</html>
+

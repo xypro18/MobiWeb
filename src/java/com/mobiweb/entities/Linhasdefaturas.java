@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Linhasdefaturas.findAll", query = "SELECT l FROM Linhasdefaturas l")
     , @NamedQuery(name = "Linhasdefaturas.findById", query = "SELECT l FROM Linhasdefaturas l WHERE l.id = :id")
     , @NamedQuery(name = "Linhasdefaturas.findByLine", query = "SELECT l FROM Linhasdefaturas l WHERE l.line = :line")
+    , @NamedQuery(name = "Linhasdefaturas.findByValue", query = "SELECT l FROM Linhasdefaturas l WHERE l.value = :value")
     , @NamedQuery(name = "Linhasdefaturas.findByCreated", query = "SELECT l FROM Linhasdefaturas l WHERE l.created = :created")
     , @NamedQuery(name = "Linhasdefaturas.findByModified", query = "SELECT l FROM Linhasdefaturas l WHERE l.modified = :modified")})
 public class Linhasdefaturas implements Serializable {
@@ -46,6 +47,10 @@ public class Linhasdefaturas implements Serializable {
     @Size(max = 30)
     @Column(name = "LINE")
     private String line;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "VALUE")
+    private int value;
     @Column(name = "CREATED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
@@ -63,6 +68,11 @@ public class Linhasdefaturas implements Serializable {
         this.id = id;
     }
 
+    public Linhasdefaturas(Integer id, int value) {
+        this.id = id;
+        this.value = value;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -77,6 +87,14 @@ public class Linhasdefaturas implements Serializable {
 
     public void setLine(String line) {
         this.line = line;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 
     public Date getCreated() {
