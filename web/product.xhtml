@@ -49,14 +49,11 @@
                         #{msg.table_products}
                     </f:facet>
 
-                    <p:ajax event="rowEdit" listener="#{dtEditView.onRowEdit}" update=":frm_prod:msgs" />
-                    <p:ajax event="rowEditCancel" listener="#{dtEditView.onRowCancel}" update=":frm_prod:msgs" />
+                    <p:ajax event="rowEdit" listener="#{product.onRowEdit}" update=":frm_prod:msgs" />
+                    <p:ajax event="rowEditCancel" listener="#{product.onRowCancel}" update=":frm_prod:msgs" />
 
                     <p:column headerText="#{msg.id}">
-                        <p:cellEditor>
-                            <f:facet name="output"><h:outputText value="#{p.id}" /></f:facet>
-                            <f:facet name="input"><p:inputText id="modelInput" value="#{p.id}" style="width:100%"/></f:facet>
-                        </p:cellEditor>
+                        <h:outputText value="#{p.id}" />
                     </p:column>
 
                     <p:column headerText="#{msg.name}">
@@ -67,15 +64,17 @@
                     </p:column>
 
                     <p:column headerText="#{msg.manager}">
-                        <h:outputText value="Gestor" />
+                        <h:outputText value="#{p.empId.username}" />
                     </p:column>
 
                     <p:column headerText="#{msg.invoices}">
                         <h:outputText value="Fatura" />
                     </p:column>
 
-                    <p:column style="width:35px">
-                        <p:rowEditor />
+                    <p:column>
+                        <p:rowEditor  rendered="#{p.empId.username eq profile.username}" />
+                        <p:commandLink styleClass="ui-icon ui-icon-trash"/>
+
                     </p:column>
                 </p:dataTable>
 

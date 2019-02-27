@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Produto.findAll", query = "SELECT p FROM Produto p")
     , @NamedQuery(name = "Produto.findById", query = "SELECT p FROM Produto p WHERE p.id = :id")
     , @NamedQuery(name = "Produto.findByName", query = "SELECT p FROM Produto p WHERE p.name = :name")
+    , @NamedQuery(name = "Produto.findBySubcatId", query = "SELECT p FROM Produto p WHERE p.subcatId.id = :subcatId")
     , @NamedQuery(name = "Produto.findByCreated", query = "SELECT p FROM Produto p WHERE p.created = :created")
     , @NamedQuery(name = "Produto.findByModified", query = "SELECT p FROM Produto p WHERE p.modified = :modified")})
 public class Produto implements Serializable {

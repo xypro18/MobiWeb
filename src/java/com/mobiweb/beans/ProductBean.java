@@ -17,6 +17,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.event.RowEditEvent;
 
 /**
  *
@@ -44,10 +45,9 @@ public class ProductBean implements Serializable {
 
     @Inject
     GenericJpaDao dao;
-    
+
     @Inject
     ProfileBean profile;
-
 
     @PostConstruct
     public void init() {
@@ -66,16 +66,16 @@ public class ProductBean implements Serializable {
         generateCategories();
         id_cat = id;
         add_cat = "";
-        generateSubCategories();
+        generateSubcategories();
         onCategoryChange();
     }
 
     public void addSubCategory() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        int id = dao.count(Subcategoria.class) + 1;        
+        int id = dao.count(Subcategoria.class) + 1;
         sub = new Subcategoria(id, add_sub, cat);
         dao.save(sub);
-        generateSubCategories();
+        generateSubcategories();
         id_sub = id;
         add_sub = "";
         onSubCategoryChange();
@@ -85,21 +85,27 @@ public class ProductBean implements Serializable {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
         Produto p = new Produto(dao.count(Produto.class) + 1, add_prod, cat, sub, profile.getEmp());
         dao.save(p);
+        generateProducts();
         add_prod = "";
+
     }
 
     private void generateCategories() {
         lcat = dao.findAll(Categoria.class);
     }
 
-    private void generateSubCategories() {
+    private void generateSubcategories() {
         lsub = dao.findByCatId(Subcategoria.class, id_cat);
+    }
+
+    private void generateProducts() {
+        lprod = dao.findBySubcatId(Produto.class, id_sub);
     }
 
     public void onCategoryChange() {
         if (id_cat != 0) {
             updateCategory();
-            generateSubCategories();
+            generateSubcategories();
             sub = null;
             id_sub = 0;
             renderSub = true;
@@ -113,14 +119,27 @@ public class ProductBean implements Serializable {
     public void onSubCategoryChange() {
         updateSubcategory();
         renderProd = (id_sub != 0);
+        generateProducts();
     }
-    
+
     private void updateCategory() {
-        cat = (Categoria) dao.findOne(Categoria.class, id_cat);        
+        cat = (Categoria) dao.findOne(Categoria.class, id_cat);
     }
-    
+
     private void updateSubcategory() {
         sub = (Subcategoria) dao.findOne(Subcategoria.class, id_sub);
+    }
+
+    public void onRowEdit(RowEditEvent event) {
+        Produto p = (Produto) event.getObject();
+        dao.update(p);
+        FacesMessage msg = new FacesMessage("Car Edited", p.getId().toString());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+
+    public void onRowCancel(RowEditEvent event) {
+        FacesMessage msg = new FacesMessage("Edit Cancelled");
+        FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     /////////////////////

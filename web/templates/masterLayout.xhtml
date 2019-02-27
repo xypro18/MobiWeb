@@ -9,6 +9,7 @@
     <f:view contentType="text/html">
 
         <h:head>
+            <h:outputStylesheet library="css" name="styles.css"/>
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
                 <title>#{msg.appTitle}</title>
@@ -23,7 +24,7 @@
                     <ui:insert name="north">
                         <h2 style="margin-top:0">#{msg.appName}: <ui:insert name="north_page"/></h2>
                         <h:outputFormat value="#{msg.welcome}" style="position:absolute;bottom:0;margin-bottom:0">
-                            <f:param value="#{empty profile.firstname ? msg.guest : profile.firstname}"/>
+                            <f:param value="#{empty profile.emp.firstname ? msg.guest : profile.emp.firstname}"/>
                         </h:outputFormat>
                     </ui:insert>
                 </p:layoutUnit>

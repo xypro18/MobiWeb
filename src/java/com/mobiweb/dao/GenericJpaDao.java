@@ -15,7 +15,7 @@ public class GenericJpaDao<T extends Serializable> {
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
 
-    public T findOne(Class<T> clazz, int id) {
+    public <T extends Object>  T findOne(Class<T> clazz, int id) {
         return em.find(clazz, id);
     }
 
@@ -23,8 +23,12 @@ public class GenericJpaDao<T extends Serializable> {
         return em.createNamedQuery(clazz.getSimpleName() + ".findAll").getResultList();
     }
 
-    public List<T> findByCatId(Class<T> clazz, int fk) {
-        return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", fk).getResultList();
+    public List<T> findByCatId(Class<T> clazz, int id) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", id).getResultList();
+    }
+    
+    public List<T> findBySubcatId(Class<T> clazz, int id) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findBySubcatId").setParameter("subcatId", id).getResultList();
     }
     
     public T findByUsername(Class<T> clazz, String user) {

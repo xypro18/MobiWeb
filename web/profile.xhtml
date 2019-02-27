@@ -11,28 +11,28 @@
             <h:form>
                 <h:panelGrid id="grid" columns="3" cellpadding="5">
                     <p:outputLabel for="firstname" value="#{msg.firsname}:" />
-                    <p:inputText id="firstname" value="#{profile.firstname}" required="true" />
+                    <p:inputText id="firstname" value="#{profile.emp.firstname}" required="true" />
                     <p:message for="firstname" display="text"/>
                     <p:outputLabel for="lastname" value="#{msg.lastname}:" />
-                    <p:inputText id="lastname" value="#{profile.lastname}" required="true" />
+                    <p:inputText id="lastname" value="#{profile.emp.lastname}" required="true" />
                     <p:message for="lastname" display="text"/>
                     <p:outputLabel for="username" value="#{msg.username}:" />
-                    <p:inputText id="username" value="#{profile.username}" required="true" />
+                    <p:inputText id="username" value="#{profile.emp.username}" required="true" />
                     <p:message for="username" display="text"/>
                     <p:outputLabel for="password" value="#{msg.password}:" />
-                    <p:password id="password" value="#{profile.password}" required="true" />
+                    <p:password id="password" value="#{profile.emp.password}" required="true" />
                     <p:message for="password" display="text"/>
                     <p:outputLabel for="sex" value="#{msg.sex}:" />
-                    <p:selectOneRadio id="sex" value="#{profile.sex}" required="true" >
+                    <p:selectOneRadio id="sex" value="#{profile.emp.sex}" required="true" >
                         <f:selectItem itemLabel="#{msg.male}" itemValue="M" />
                         <f:selectItem itemLabel="#{msg.female}" itemValue="F" />
                     </p:selectOneRadio>
                     <p:message for="sex" display="text"/>
                     <p:outputLabel for="popup" value="#{msg.date_birth}:" />
-                    <p:calendar id="popup" value="#{profile.dob}" pattern="dd/MM/yyyy" required="true" />
+                    <p:calendar id="popup" value="#{profile.emp.dateofbirth}" pattern="dd/MM/yyyy" required="true" />
                     <p:message for="popup" display="text"/>
                     <p:outputLabel for="role" value="#{msg.role}:" />
-                    <p:selectOneRadio id="role" value="#{profile.role}" required="true" >
+                    <p:selectOneRadio id="role" value="#{profile.emp.role}" required="true" >
                         <f:selectItem itemLabel="#{msg.admin}" itemValue="Administrator" />
                         <f:selectItem itemLabel="#{msg.employee}" itemValue="Employee" />
                     </p:selectOneRadio>
