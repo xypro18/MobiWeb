@@ -4,9 +4,10 @@ create table EMPREGADO
 	FIRSTNAME VARCHAR(30) not null,
 	LASTNAME VARCHAR(30) not null,
 	USERNAME VARCHAR(30) not null unique,
-	PASSWORD VARCHAR(30) not null,
+	PASSWORD VARCHAR(128) not null,
 	SEX CHAR(1) not null,
 	DATEOFBIRTH DATE not null,
+	ROLE VARCHAR(30) not null,
 	CREATED TIMESTAMP,
 	MODIFIED TIMESTAMP
 );

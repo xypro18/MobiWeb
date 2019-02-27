@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
  * @author Admin
  */
 @Stateless
-public class ProdutoDao extends GenericJpaDao<Produto>{
+public class ProdutoDao extends AbstractJpaDao<Produto>{
 
     public ProdutoDao() {
         super(Produto.class);

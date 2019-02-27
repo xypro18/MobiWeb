@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
  * @author Admin
  */
 @Stateless
-public class EmpregadoDao extends GenericJpaDao<Empregado>{
+public class EmpregadoDao extends AbstractJpaDao<Empregado>{
 
     public EmpregadoDao() {
         super(Empregado.class);

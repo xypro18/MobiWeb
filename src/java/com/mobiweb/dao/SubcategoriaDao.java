@@ -13,7 +13,7 @@ import javax.ejb.Stateless;
  * @author Admin
  */
 @Stateless
-public class SubcategoriaDao extends GenericJpaDao<Subcategoria>{
+public class SubcategoriaDao extends AbstractJpaDao<Subcategoria>{
 
     public SubcategoriaDao() {
         super(Subcategoria.class);

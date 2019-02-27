@@ -5,9 +5,7 @@
  */
 package com.mobiweb.beans;
 
-import com.mobiweb.dao.CategoriaDao;
-import com.mobiweb.dao.ProdutoDao;
-import com.mobiweb.dao.SubcategoriaDao;
+import com.mobiweb.dao.GenericJpaDao;
 import com.mobiweb.entities.Categoria;
 import com.mobiweb.entities.Produto;
 import com.mobiweb.entities.Subcategoria;
@@ -44,9 +42,12 @@ public class ProductBean implements Serializable {
     private Categoria cat = null;
     private Subcategoria sub = null;
 
-    @Inject CategoriaDao daoCat;
-    @Inject SubcategoriaDao daoSub;
-    @Inject ProdutoDao daoProd;
+    @Inject
+    GenericJpaDao dao;
+    
+    @Inject
+    ProfileBean profile;
+
 
     @PostConstruct
     public void init() {
@@ -59,9 +60,9 @@ public class ProductBean implements Serializable {
 
     public void addCategory() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        int id = daoCat.count()+1;
+        int id = dao.count(Categoria.class) + 1;
         cat = new Categoria(id, add_cat);
-        daoCat.save(cat);
+        dao.save(cat);
         generateCategories();
         id_cat = id;
         add_cat = "";
@@ -69,42 +70,37 @@ public class ProductBean implements Serializable {
         onCategoryChange();
     }
 
-    public void addCategory(boolean reset) {
-        if (reset) {
-            add_cat = "";
-        }
-    }
-
     public void addSubCategory() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        int id = daoSub.count() + 1;
-        Categoria c = daoCat.findOne(id_cat);
-        sub = new Subcategoria(id, add_sub, c);
-        daoSub.save(sub);
+        int id = dao.count(Subcategoria.class) + 1;        
+        sub = new Subcategoria(id, add_sub, cat);
+        dao.save(sub);
         generateSubCategories();
         id_sub = id;
         add_sub = "";
         onSubCategoryChange();
     }
-    
+
     public void addProduct() {
         //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Produto p = new Produto(daoProd.count() + 1, add_prod);
-        daoProd.save(p);
+        Produto p = new Produto(dao.count(Produto.class) + 1, add_prod, cat, sub, profile.getEmp());
+        dao.save(p);
         add_prod = "";
     }
 
     private void generateCategories() {
-        lcat = daoCat.findAll();
+        lcat = dao.findAll(Categoria.class);
     }
 
     private void generateSubCategories() {
-        lsub = daoSub.findByCatId(id_cat);
+        lsub = dao.findByCatId(Subcategoria.class, id_cat);
     }
 
     public void onCategoryChange() {
         if (id_cat != 0) {
+            updateCategory();
             generateSubCategories();
+            sub = null;
             id_sub = 0;
             renderSub = true;
             renderProd = false;
@@ -115,21 +111,29 @@ public class ProductBean implements Serializable {
     }
 
     public void onSubCategoryChange() {
+        updateSubcategory();
         renderProd = (id_sub != 0);
+    }
+    
+    private void updateCategory() {
+        cat = (Categoria) dao.findOne(Categoria.class, id_cat);        
+    }
+    
+    private void updateSubcategory() {
+        sub = (Subcategoria) dao.findOne(Subcategoria.class, id_sub);
     }
 
     /////////////////////
     //GETTERS E SETTERS//
     /////////////////////
-
     public String getAdd_prod() {
         return add_prod;
     }
 
     public void setAdd_prod(String add_prod) {
         this.add_prod = add_prod;
-    }    
-       
+    }
+
     public boolean isRenderProd() {
         return renderProd;
     }
@@ -176,22 +180,6 @@ public class ProductBean implements Serializable {
 
     public void setLsub(List<Subcategoria> lsub) {
         this.lsub = lsub;
-    }
-
-    public Categoria getCat() {
-        return cat;
-    }
-
-    public void setCat(Categoria cat) {
-        this.cat = cat;
-    }
-
-    public Subcategoria getSub() {
-        return sub;
-    }
-
-    public void setSub(Subcategoria sub) {
-        this.sub = sub;
     }
 
     public String getAdd_sub() {

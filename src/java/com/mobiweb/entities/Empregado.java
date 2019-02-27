@@ -6,23 +6,19 @@
 package com.mobiweb.entities;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -40,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Empregado.findByPassword", query = "SELECT e FROM Empregado e WHERE e.password = :password")
     , @NamedQuery(name = "Empregado.findBySex", query = "SELECT e FROM Empregado e WHERE e.sex = :sex")
     , @NamedQuery(name = "Empregado.findByDateofbirth", query = "SELECT e FROM Empregado e WHERE e.dateofbirth = :dateofbirth")
+    , @NamedQuery(name = "Empregado.findByRole", query = "SELECT e FROM Empregado e WHERE e.role = :role")
     , @NamedQuery(name = "Empregado.findByCreated", query = "SELECT e FROM Empregado e WHERE e.created = :created")
     , @NamedQuery(name = "Empregado.findByModified", query = "SELECT e FROM Empregado e WHERE e.modified = :modified")})
 public class Empregado implements Serializable {
@@ -67,7 +64,7 @@ public class Empregado implements Serializable {
     private String username;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 128)
     @Column(name = "PASSWORD")
     private String password;
     @Basic(optional = false)
@@ -79,16 +76,17 @@ public class Empregado implements Serializable {
     @Column(name = "DATEOFBIRTH")
     @Temporal(TemporalType.DATE)
     private Date dateofbirth;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 30)
+    @Column(name = "ROLE")
+    private String role;
     @Column(name = "CREATED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empId")
-    private Collection<Produto> produtoCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empId")
-    private Collection<Faturas> faturasCollection;
 
     public Empregado() {
     }
@@ -97,7 +95,7 @@ public class Empregado implements Serializable {
         this.id = id;
     }
 
-    public Empregado(Integer id, String firstname, String lastname, String username, String password, Character sex, Date dateofbirth) {
+    public Empregado(Integer id, String firstname, String lastname, String username, String password, Character sex, Date dateofbirth, String role) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
@@ -105,6 +103,7 @@ public class Empregado implements Serializable {
         this.password = password;
         this.sex = sex;
         this.dateofbirth = dateofbirth;
+        this.role = role;
     }
 
     public Integer getId() {
@@ -163,6 +162,14 @@ public class Empregado implements Serializable {
         this.dateofbirth = dateofbirth;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public Date getCreated() {
         return created;
     }
@@ -177,24 +184,6 @@ public class Empregado implements Serializable {
 
     public void setModified(Date modified) {
         this.modified = modified;
-    }
-
-    @XmlTransient
-    public Collection<Produto> getProdutoCollection() {
-        return produtoCollection;
-    }
-
-    public void setProdutoCollection(Collection<Produto> produtoCollection) {
-        this.produtoCollection = produtoCollection;
-    }
-
-    @XmlTransient
-    public Collection<Faturas> getFaturasCollection() {
-        return faturasCollection;
-    }
-
-    public void setFaturasCollection(Collection<Faturas> faturasCollection) {
-        this.faturasCollection = faturasCollection;
     }
 
     @Override

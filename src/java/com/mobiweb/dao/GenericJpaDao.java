@@ -4,32 +4,31 @@ import com.mobiweb.exceptions.ItemException;
 import com.mobiweb.entities.Categoria;
 import java.io.Serializable;
 import java.util.List;
+import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-public abstract class GenericJpaDao<T extends Serializable> {
-    private Class< T > clazz;
-    
+@Stateless
+public class GenericJpaDao<T extends Serializable> {
+
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
-    
-    public GenericJpaDao(Class< T > clazzToSet) {
-        this.clazz = clazzToSet;
-    }
-    
 
-
-    public T findOne(int id) {
+    public T findOne(Class<T> clazz, int id) {
         return em.find(clazz, id);
     }
 
-    public List<T> findAll() {
+    public List<T> findAll(Class<T> clazz) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findAll").getResultList();
     }
 
-    public List<T> findByCatId(int fk) {
+    public List<T> findByCatId(Class<T> clazz, int fk) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", fk).getResultList();
+    }
+    
+    public T findByUsername(Class<T> clazz, String user) {
+        return (T) em.createNamedQuery(clazz.getSimpleName() + ".findByUsername").setParameter("username", user).getSingleResult();
     }
 
     public void save(T entity) {
@@ -45,8 +44,8 @@ public abstract class GenericJpaDao<T extends Serializable> {
         em.remove(entity);
     }
 
-    public void deleteById(int entityId) {
-        T entity = findOne(entityId);
+    public void deleteById(Class<T> clazz, int entityId) {
+        T entity = findOne(clazz, entityId);
         delete(entity);
     }
 
@@ -87,7 +86,7 @@ public abstract class GenericJpaDao<T extends Serializable> {
 //        List<Categoria> allItems = query.getResultList();
 //        return allItems;
 //    }
-    public int count() {
+    public int count(Class<T> clazz) {
         javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
         javax.persistence.criteria.Root<Categoria> rt = cq.from(clazz);
         cq.select(em.getCriteriaBuilder().count(rt));

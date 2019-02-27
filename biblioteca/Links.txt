@@ -3,3 +3,5 @@ https://docs.oracle.com/middleware/1221/biee/BIESC/privileges.htm#BIESC6096
 
 DAO Generic:
 https://www.baeldung.com/simplifying-the-data-access-layer-with-spring-and-java-generics
+
+https://stackoverflow.com/questions/33862780/trying-to-extend-an-ejb-from-a-generic-class-illegalargumentexception-the-argum?rq=1

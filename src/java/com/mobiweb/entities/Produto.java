@@ -81,6 +81,14 @@ public class Produto implements Serializable {
         this.id = id;
         this.name = name;
     }
+    
+    public Produto(Integer id, String name, Categoria cat, Subcategoria sub, Empregado emp) {
+        this.id = id;
+        this.name = name;
+        this.catId = cat;
+        this.subcatId = sub;
+        this.empId = emp;
+    }    
 
     public Integer getId() {
         return id;

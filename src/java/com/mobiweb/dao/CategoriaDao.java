@@ -6,6 +6,7 @@
 package com.mobiweb.dao;
 
 import com.mobiweb.entities.Categoria;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 /**
@@ -13,7 +14,8 @@ import javax.ejb.Stateless;
  * @author Admin
  */
 @Stateless
-public class CategoriaDao extends GenericJpaDao<Categoria>{
+@LocalBean
+public class CategoriaDao extends AbstractJpaDao<Categoria> {
 
     public CategoriaDao() {
         super(Categoria.class);
