@@ -12,6 +12,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -44,8 +47,8 @@ public class Subcategoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
@@ -59,10 +62,10 @@ public class Subcategoria implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "subcatId")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "subcatId", fetch = FetchType.LAZY)
     private Collection<Produto> produtoCollection;
     @JoinColumn(name = "CAT_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Categoria catId;
 
     public Subcategoria() {
@@ -77,8 +80,7 @@ public class Subcategoria implements Serializable {
         this.name = name;
     }
 
-    public Subcategoria(Integer id, String name, Categoria cat) {
-        this.id = id;
+    public Subcategoria(String name, Categoria cat) {
         this.name = name;
         this.catId = cat;
     }

@@ -14,7 +14,7 @@ import java.util.ResourceBundle;
 public class NewClass {
     
     public static void main(String ...args) {
-        String msg = "select_category";
+        String msg = "category";
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages");
         System.out.println(rb.getString(msg));
                 

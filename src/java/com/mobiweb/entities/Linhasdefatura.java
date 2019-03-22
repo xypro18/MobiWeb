@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,24 +27,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author CR
+ * @author Rodrigues
  */
 @Entity
-@Table(name = "LINHASDEFATURAS")
+@Table(name = "LINHASDEFATURA")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Linhasdefaturas.findAll", query = "SELECT l FROM Linhasdefaturas l")
-    , @NamedQuery(name = "Linhasdefaturas.findById", query = "SELECT l FROM Linhasdefaturas l WHERE l.id = :id")
-    , @NamedQuery(name = "Linhasdefaturas.findByLine", query = "SELECT l FROM Linhasdefaturas l WHERE l.line = :line")
-    , @NamedQuery(name = "Linhasdefaturas.findByValue", query = "SELECT l FROM Linhasdefaturas l WHERE l.value = :value")
-    , @NamedQuery(name = "Linhasdefaturas.findByCreated", query = "SELECT l FROM Linhasdefaturas l WHERE l.created = :created")
-    , @NamedQuery(name = "Linhasdefaturas.findByModified", query = "SELECT l FROM Linhasdefaturas l WHERE l.modified = :modified")})
-public class Linhasdefaturas implements Serializable {
+    @NamedQuery(name = "Linhasdefatura.findAll", query = "SELECT l FROM Linhasdefatura l")
+    , @NamedQuery(name = "Linhasdefatura.findById", query = "SELECT l FROM Linhasdefatura l WHERE l.id = :id")
+    , @NamedQuery(name = "Linhasdefatura.findByLine", query = "SELECT l FROM Linhasdefatura l WHERE l.line = :line")
+    , @NamedQuery(name = "Linhasdefatura.findByValue", query = "SELECT l FROM Linhasdefatura l WHERE l.value = :value")
+    , @NamedQuery(name = "Linhasdefatura.findByFatId", query = "SELECT l FROM Linhasdefatura l WHERE l.fatId.id = :fatId")
+    , @NamedQuery(name = "Linhasdefatura.findByCreated", query = "SELECT l FROM Linhasdefatura l WHERE l.created = :created")
+    , @NamedQuery(name = "Linhasdefatura.findByModified", query = "SELECT l FROM Linhasdefatura l WHERE l.modified = :modified")})
+public class Linhasdefatura implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Size(max = 30)
@@ -50,7 +54,7 @@ public class Linhasdefaturas implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "VALUE")
-    private int value;
+    private double value;
     @Column(name = "CREATED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
@@ -58,19 +62,25 @@ public class Linhasdefaturas implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
     @JoinColumn(name = "FAT_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private Faturas fatId;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Fatura fatId;
 
-    public Linhasdefaturas() {
+    public Linhasdefatura() {
     }
 
-    public Linhasdefaturas(Integer id) {
+    public Linhasdefatura(Integer id) {
         this.id = id;
     }
 
-    public Linhasdefaturas(Integer id, int value) {
+    public Linhasdefatura(Integer id, int value) {
         this.id = id;
         this.value = value;
+    }
+
+    public Linhasdefatura(String line, double value, Fatura fat) {
+        this.line = line;
+        this.value = value;
+        this.fatId = fat;
     }
 
     public Integer getId() {
@@ -89,11 +99,11 @@ public class Linhasdefaturas implements Serializable {
         this.line = line;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
@@ -113,11 +123,11 @@ public class Linhasdefaturas implements Serializable {
         this.modified = modified;
     }
 
-    public Faturas getFatId() {
+    public Fatura getFatId() {
         return fatId;
     }
 
-    public void setFatId(Faturas fatId) {
+    public void setFatId(Fatura fatId) {
         this.fatId = fatId;
     }
 
@@ -131,10 +141,10 @@ public class Linhasdefaturas implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Linhasdefaturas)) {
+        if (!(object instanceof Linhasdefatura)) {
             return false;
         }
-        Linhasdefaturas other = (Linhasdefaturas) object;
+        Linhasdefatura other = (Linhasdefatura) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -143,7 +153,7 @@ public class Linhasdefaturas implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mobiweb.entities.Linhasdefaturas[ id=" + id + " ]";
+        return "com.mobiweb.entities.Linhasdefatura[ id=" + id + " ]";
     }
-    
+
 }

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition template="/templates/masterLayout.xhtml">
+        <ui:define name="north_page">#{msg.profile}</ui:define>
+        <ui:define name="sideBarLeft"></ui:define>
+        <ui:define name="center">
+            <h:form>
+                <h:panelGrid id="grid" columns="3" cellpadding="5">
+                    <p:outputLabel for="firstname" value="#{msg.firsname}:" />
+                    <p:inputText id="firstname" value="#{profile.emp.firstname}" required="true" />
+                    <p:message for="firstname" display="text"/>
+                    <p:outputLabel for="lastname" value="#{msg.lastname}:" />
+                    <p:inputText id="lastname" value="#{profile.emp.lastname}" required="true" />
+                    <p:message for="lastname" display="text"/>
+                    <p:outputLabel for="username" value="#{msg.username}:" />
+                    <p:inputText id="username" value="#{profile.emp.username}" required="true" />
+                    <p:message for="username" display="text"/>
+                    <p:outputLabel for="sex" value="#{msg.sex}:" />
+                    <p:selectOneRadio id="sex" value="#{profile.emp.sex}" required="true" >
+                        <f:selectItem itemLabel="#{msg.male}" itemValue="M" />
+                        <f:selectItem itemLabel="#{msg.female}" itemValue="F" />
+                    </p:selectOneRadio>
+                    <p:message for="sex" display="text"/>
+                    <p:outputLabel for="popup" value="#{msg.date_birth}:" />
+                    <p:calendar id="popup" value="#{profile.emp.dateofbirth}" pattern="dd/MM/yyyy" required="true" />
+                    <p:message for="popup" display="text"/>
+                    <p:outputLabel for="role" value="#{msg.role}:" />
+                    <p:selectOneRadio id="role" value="#{profile.emp.role}" required="true" >
+                        <f:selectItem itemLabel="#{msg.admin}" itemValue="Administrator" />
+                        <f:selectItem itemLabel="#{msg.employee}" itemValue="Employee" />
+                    </p:selectOneRadio>
+                    <p:message for="role" display="text"/>
+                    <p:outputLabel for="password" value="#{msg.password}:" />
+                    <p:password id="password" value="#{profile.emp.password}" match="confpass" required="true" />
+                    <p:message for="password" display="text"/>
+                    <p:outputLabel for="confpass" value="#{msg.confirm}:" />
+                    <p:password id="confpass" value="#{profile.emp.password}" required="true" />
+                    <p:message for="confpass" display="text"/>
+                </h:panelGrid>
+                <br/>
+                <p:commandButton value="#{msg.save}" action="#{profile.registerUser}" update="grid" />
+                <p:spacer width="20" />
+                <p:commandButton value="#{msg.reset}" type="reset" />
+                <p:spacer width="20" />
+                <p:commandButton value="#{msg.cancel}" immediate="true" action="login" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>
+

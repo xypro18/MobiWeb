@@ -12,6 +12,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -41,8 +44,8 @@ public class Categoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
@@ -56,9 +59,7 @@ public class Categoria implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "catId")
-    private Collection<Produto> produtoCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "catId")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "catId", fetch = FetchType.LAZY)
     private Collection<Subcategoria> subcategoriaCollection;
 
     public Categoria() {
@@ -70,6 +71,10 @@ public class Categoria implements Serializable {
 
     public Categoria(Integer id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public Categoria(String name) {
         this.name = name;
     }
 
@@ -106,15 +111,6 @@ public class Categoria implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Produto> getProdutoCollection() {
-        return produtoCollection;
-    }
-
-    public void setProdutoCollection(Collection<Produto> produtoCollection) {
-        this.produtoCollection = produtoCollection;
-    }
-
-    @XmlTransient
     public Collection<Subcategoria> getSubcategoriaCollection() {
         return subcategoriaCollection;
     }
@@ -147,5 +143,5 @@ public class Categoria implements Serializable {
     public String toString() {
         return "com.mobiweb.entities.Categoria[ id=" + id + " ]";
     }
-    
+
 }

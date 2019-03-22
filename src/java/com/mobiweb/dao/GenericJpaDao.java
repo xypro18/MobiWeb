@@ -4,10 +4,14 @@ import com.mobiweb.exceptions.ItemException;
 import com.mobiweb.entities.Categoria;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 @Stateless
 public class GenericJpaDao<T extends Serializable> {
@@ -15,7 +19,7 @@ public class GenericJpaDao<T extends Serializable> {
     @PersistenceContext(unitName = "MobiWebPU")
     private EntityManager em;
 
-    public <T extends Object>  T findOne(Class<T> clazz, int id) {
+    public <T extends Object> T findOne(Class<T> clazz, int id) {
         return em.find(clazz, id);
     }
 
@@ -26,18 +30,32 @@ public class GenericJpaDao<T extends Serializable> {
     public List<T> findByCatId(Class<T> clazz, int id) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByCatId").setParameter("catId", id).getResultList();
     }
-    
+
     public List<T> findBySubcatId(Class<T> clazz, int id) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findBySubcatId").setParameter("subcatId", id).getResultList();
     }
+
+    public List<T> findByProdId(Class<T> clazz, int id) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findByProdId").setParameter("prodId", id).getResultList();
+    }
     
+    public List<T> findByFatId(Class<T> clazz, int id) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findByFatId").setParameter("fatId", id).getResultList();
+    }
+
     public T findByUsername(Class<T> clazz, String user) {
         return (T) em.createNamedQuery(clazz.getSimpleName() + ".findByUsername").setParameter("username", user).getSingleResult();
     }
 
     public void save(T entity) {
-        em.persist(entity);
-        em.flush();
+        try {
+            em.persist(entity);
+            em.flush();
+        } catch (ConstraintViolationException e) {
+            for (ConstraintViolation<?> cve : e.getConstraintViolations()) {
+                System.out.println(e.toString());
+            }
+        }
     }
 
     public void update(T entity) {

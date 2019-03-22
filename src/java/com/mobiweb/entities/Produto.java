@@ -12,6 +12,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -44,8 +47,8 @@ public class Produto implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
@@ -59,17 +62,14 @@ public class Produto implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @JoinColumn(name = "CAT_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private Categoria catId;
     @JoinColumn(name = "EMP_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Empregado empId;
     @JoinColumn(name = "SUBCAT_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Subcategoria subcatId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prodId")
-    private Collection<Faturas> faturasCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prodId", fetch = FetchType.LAZY)
+    private Collection<Fatura> faturaCollection;
 
     public Produto() {
     }
@@ -82,14 +82,12 @@ public class Produto implements Serializable {
         this.id = id;
         this.name = name;
     }
-    
-    public Produto(Integer id, String name, Categoria cat, Subcategoria sub, Empregado emp) {
-        this.id = id;
+
+    public Produto(String name, Subcategoria sub, Empregado emp) {
         this.name = name;
-        this.catId = cat;
         this.subcatId = sub;
         this.empId = emp;
-    }    
+    }
 
     public Integer getId() {
         return id;
@@ -123,14 +121,6 @@ public class Produto implements Serializable {
         this.modified = modified;
     }
 
-    public Categoria getCatId() {
-        return catId;
-    }
-
-    public void setCatId(Categoria catId) {
-        this.catId = catId;
-    }
-
     public Empregado getEmpId() {
         return empId;
     }
@@ -148,12 +138,12 @@ public class Produto implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Faturas> getFaturasCollection() {
-        return faturasCollection;
+    public Collection<Fatura> getFaturaCollection() {
+        return faturaCollection;
     }
 
-    public void setFaturasCollection(Collection<Faturas> faturasCollection) {
-        this.faturasCollection = faturasCollection;
+    public void setFaturaCollection(Collection<Fatura> faturaCollection) {
+        this.faturaCollection = faturaCollection;
     }
 
     @Override
@@ -178,7 +168,7 @@ public class Produto implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mobiweb.entities.Produto[ id=" + id + " ]";
+        return "com.mobiweb.entities.Produto[ id=" + id + ", name=" + name + " ]";
     }
-    
+
 }

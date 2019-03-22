@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <ui:composition template="/templates/masterLayout.xhtml">
+        <ui:define name="north_page">#{msg.list}</ui:define>
+        <ui:define name="center">
+            <h:form id="frm_list">
+                <p:dataTable id="eventsDT" var="p" value="#{list.lprod}" widgetVar="prodTable" 
+                             filteredValue="#{list.filteredProd}" emptyMessage="No products found with given criteria">
+                    <f:facet name="header">
+                        #{msg.select} #{msg.product}
+                    </f:facet>
+                    <p:column headerText="#{msg.product} #{msg.id}" filterBy="#{p.id}" filterMatchMode="exact">
+                        <h:outputText value="#{p.id}" />
+                    </p:column>
+                    <p:column headerText="#{msg.category}" filterBy="#{p.subcatId.catId.name}" filterMatchMode="contains">
+                        <h:outputText value="#{p.subcatId.catId.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.subcategory}" filterBy="#{p.subcatId.name}" filterMatchMode="contains">
+                        <h:outputText value="#{p.subcatId.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.product}" filterBy="#{p.name}" filterMatchMode="contains">                        
+                        <p:commandButton icon="ui-icon ui-icon-search" action="#{product.acceptCategory}" style="width:20px;height:20px" >
+                            <f:setPropertyActionListener value="#{p.subcatId.catId.id}" target="#{product.idCat}" />
+                            <f:setPropertyActionListener value="#{p.subcatId.id}" target="#{product.idSub}" />  
+                        </p:commandButton>
+                        <h:outputText value=" #{p.name}" style="vertical-align:super"/>
+                    </p:column>
+                    <p:column headerText="#{msg.manager}" filterBy="#{p.empId.username}" filterMatchMode="contains">
+                        <h:outputText value="#{p.empId.username}" />
+                    </p:column>
+                    <p:column headerText="#{msg.invoice}" filterBy="#{list.createInvoiceList(p.faturaCollection)}" filterMatchMode="contains">
+                        <ui:repeat var="f" value="#{p.faturaCollection}" >
+                            <p:commandButton icon="ui-icon ui-icon-search" action="#{invoice.acceptProduct(f.id)}" style="width:20px;height:20px;margin:5px 10px;" >
+                                <f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />
+                            </p:commandButton>
+                            <h:outputText value="#{f.name}" style="vertical-align:super" /><br/>
+                        </ui:repeat>
+                        <p:commandButton icon="ui-icon ui-icon-search" action="#{invoice.acceptProduct(0)}" rendered="#{empty p.faturaCollection}" style="width:20px;height:20px;margin:5px 10px;" >
+                            <f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

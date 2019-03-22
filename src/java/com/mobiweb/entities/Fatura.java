@@ -12,6 +12,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,52 +34,55 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author CR
  */
 @Entity
-@Table(name = "FATURAS")
+@Table(name = "FATURA")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Faturas.findAll", query = "SELECT f FROM Faturas f")
-    , @NamedQuery(name = "Faturas.findById", query = "SELECT f FROM Faturas f WHERE f.id = :id")
-    , @NamedQuery(name = "Faturas.findByCode", query = "SELECT f FROM Faturas f WHERE f.code = :code")
-    , @NamedQuery(name = "Faturas.findByCreated", query = "SELECT f FROM Faturas f WHERE f.created = :created")
-    , @NamedQuery(name = "Faturas.findByModified", query = "SELECT f FROM Faturas f WHERE f.modified = :modified")})
-public class Faturas implements Serializable {
+    @NamedQuery(name = "Fatura.findAll", query = "SELECT f FROM Fatura f")
+    , @NamedQuery(name = "Fatura.findById", query = "SELECT f FROM Fatura f WHERE f.id = :id")
+    , @NamedQuery(name = "Fatura.findByName", query = "SELECT f FROM Fatura f WHERE f.name = :name")
+    , @NamedQuery(name = "Fatura.findByProdId", query = "SELECT f FROM Fatura f WHERE f.prodId.id = :prodId")
+    , @NamedQuery(name = "Fatura.findByCreated", query = "SELECT f FROM Fatura f WHERE f.created = :created")
+    , @NamedQuery(name = "Fatura.findByModified", query = "SELECT f FROM Fatura f WHERE f.modified = :modified")})
+public class Fatura implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 30)
-    @Column(name = "CODE")
-    private String code;
+    @Column(name = "NAME")
+    private String name;
     @Column(name = "CREATED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "fatId")
-    private Collection<Linhasdefaturas> linhasdefaturasCollection;
-    @JoinColumn(name = "EMP_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
-    private Empregado empId;
     @JoinColumn(name = "PROD_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Produto prodId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "fatId", fetch = FetchType.LAZY)
+    private Collection<Linhasdefatura> linhasdefaturaCollection;
 
-    public Faturas() {
+    public Fatura() {
     }
 
-    public Faturas(Integer id) {
+    public Fatura(Integer id) {
         this.id = id;
     }
 
-    public Faturas(Integer id, String code) {
+    public Fatura(Integer id, String name) {
         this.id = id;
-        this.code = code;
+        this.name = name;
+    }
+
+    public Fatura(String name, Produto prod) {
+        this.name = name;
+        this.prodId = prod;
     }
 
     public Integer getId() {
@@ -87,12 +93,12 @@ public class Faturas implements Serializable {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
+    public String getName() {
+        return name;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getCreated() {
@@ -111,29 +117,21 @@ public class Faturas implements Serializable {
         this.modified = modified;
     }
 
-    @XmlTransient
-    public Collection<Linhasdefaturas> getLinhasdefaturasCollection() {
-        return linhasdefaturasCollection;
-    }
-
-    public void setLinhasdefaturasCollection(Collection<Linhasdefaturas> linhasdefaturasCollection) {
-        this.linhasdefaturasCollection = linhasdefaturasCollection;
-    }
-
-    public Empregado getEmpId() {
-        return empId;
-    }
-
-    public void setEmpId(Empregado empId) {
-        this.empId = empId;
-    }
-
     public Produto getProdId() {
         return prodId;
     }
 
     public void setProdId(Produto prodId) {
         this.prodId = prodId;
+    }
+
+    @XmlTransient
+    public Collection<Linhasdefatura> getLinhasdefaturaCollection() {
+        return linhasdefaturaCollection;
+    }
+
+    public void setLinhasdefaturaCollection(Collection<Linhasdefatura> linhasdefaturaCollection) {
+        this.linhasdefaturaCollection = linhasdefaturaCollection;
     }
 
     @Override
@@ -146,10 +144,10 @@ public class Faturas implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Faturas)) {
+        if (!(object instanceof Fatura)) {
             return false;
         }
-        Faturas other = (Faturas) object;
+        Fatura other = (Fatura) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -158,7 +156,7 @@ public class Faturas implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mobiweb.entities.Faturas[ id=" + id + " ]";
+        return "com.mobiweb.entities.Fatura[ id=" + id + ", name=" + name + " ]";
     }
-    
+
 }

@@ -1,3 +1,7 @@
-.ui-icon-pencil { 
-    float: left !important;
+.ui-row-editor { 
+    float: left;
+}
+
+.ui-state-disabled {
+    opacity:0.85 !important;
 }

@@ -23,15 +23,16 @@ import javax.inject.Inject;
 public class ProfileBean implements Serializable {
     private String username;
     private String password;
-    private Empregado emp;
+    private Empregado emp = new Empregado();
 
     @Inject
     GenericJpaDao dao;
 
     public ProfileBean() {
     }
-
-    public String login() {
+        
+    //Valida username e password 
+    public String validadeUserLogin() {
         username = username.toLowerCase();
         emp = (Empregado) dao.findByUsername(Empregado.class, username);
         if (emp != null && emp.getPassword().equals(PBKDF2.getHash(password.toCharArray(), username))) {
@@ -40,13 +41,22 @@ public class ProfileBean implements Serializable {
             return null;
         }
     }
-
-    public String save() {
-        emp.setUsername(emp.getUsername().toLowerCase());
-        emp.setId(dao.count(Empregado.class) + 1);
-        String hash = PBKDF2.getHash(emp.getPassword().toCharArray(), emp.getUsername());
+    
+    //Regista utilizador
+    public String registerUser() {
+        username = emp.getUsername().toLowerCase();
+        emp.setUsername(username);
+        String hash = PBKDF2.getHash(emp.getPassword().toCharArray(), username);
+        emp.setPassword(hash);
         dao.save(emp);
         return "product";
+    }
+    
+    public String logout() {
+        username = null;
+        password = null;
+        emp = null;
+        return "login";
     }
 
     /////////////////////

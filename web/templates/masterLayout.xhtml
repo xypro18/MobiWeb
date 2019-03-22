@@ -20,21 +20,27 @@
 
             <p:layout fullPage="true">
 
-                <p:layoutUnit position="north" size="100" >
+                <p:layoutUnit position="north" >
                     <ui:insert name="north">
-                        <h2 style="margin-top:0">#{msg.appName}: <ui:insert name="north_page"/></h2>
-                        <h:outputFormat value="#{msg.welcome}" style="position:absolute;bottom:0;margin-bottom:0">
-                            <f:param value="#{empty profile.emp.firstname ? msg.guest : profile.emp.firstname}"/>
-                        </h:outputFormat>
+                        <h:form>
+                            <h2 style="margin-top:0">#{msg.appName}: <ui:insert name="north_page"/></h2>
+                            <br/>
+                            <h:outputFormat style="float:left;margin-right:5px" value="#{msg.welcome}" >
+                                <f:param value="#{empty profile.emp.firstname ? msg.guest : profile.emp.firstname}"/>
+                            </h:outputFormat>
+                            <h:commandLink action="#{profile.logout}" rendered="#{not empty profile.emp.firstname}" styleClass="ui-icon ui-icon-power" style="float:left" />
+                            <p:selectOneMenu value="#{locale.language}" style="position:absolute;bottom:0;right:0" >                                
+                                <f:selectItem itemLabel="#{msg.langEN}" itemValue="en" />
+                                <f:selectItem itemLabel="#{msg.langPT}" itemValue="pt" />
+                            </p:selectOneMenu>
+                        </h:form>
                     </ui:insert>
                 </p:layoutUnit>
-
-                <p:layoutUnit position="west" size="250" header="Menu" collapsible="false">
-                    <ui:insert name="sideBarLeft">
+                <ui:insert name="sideBarLeft">
+                    <p:layoutUnit position="west" size="250" header="Menu" collapsible="false">
                         <ui:include src="sideBarLeft.xhtml"/>
-                    </ui:insert>
-                </p:layoutUnit>
-
+                    </p:layoutUnit>
+                </ui:insert>
                 <p:layoutUnit position="center">
                     <ui:insert name="center"/>
                 </p:layoutUnit>

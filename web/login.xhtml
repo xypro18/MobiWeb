@@ -6,6 +6,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets">
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.login}</ui:define>
+        <ui:define name="sideBarLeft"></ui:define>
         <ui:define name="center">
             <h:form>
                 <h:panelGrid id="grid" columns="3" cellpadding="5">
@@ -15,8 +16,8 @@
                     <p:outputLabel for="password" value="#{msg.password}:" />
                     <p:password id="password" value="#{profile.password}" required="true" label="password" />
                     <p:message for="password" display="text"/>
-                    <p:commandButton value="#{msg.login}" action="#{profile.login}" update="grid" />
-                    <p:commandButton immediate="true" value="#{msg.register}" action="profile" />
+                    <p:commandButton value="#{msg.login}" action="#{profile.validadeUserLogin}" update="grid" />
+                    <p:commandButton immediate="true" value="#{msg.register}" action="registration" />
                 </h:panelGrid>
             </h:form>
         </ui:define>

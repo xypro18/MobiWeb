@@ -3,11 +3,137 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.man_invoice}</ui:define>
         <ui:define name="center">
-            Hello World!
+            <h:panelGrid columns="2" cellspacing="10">
+                <h:outputText value="#{msg.category}:  " />
+                <h:outputText value="#{invoice.prod.subcatId.catId.name}" />
+                <h:outputText value="#{msg.subcategory}:  " />
+                <h:outputText value="#{invoice.prod.subcatId.name}" />
+                <h:outputText value="#{msg.product}:  " />
+                <h:outputText value="#{invoice.prod.name}" />
+                <h:outputText value="#{msg.username}:  " />
+                <h:outputText value="#{invoice.prod.empId.username}" />
+            </h:panelGrid>
+            <br/>
+            <h:form id="frm_inv">
+                <p:outputLabel value="#{msg.invoice}:" style="display:block;width:120px" />
+                <p:selectOneMenu id="sel" value="#{invoice.idInv}" style="width:200px" >                                
+                    <p:ajax listener="#{invoice.onInvoiceChange}" update="frm_inv" />
+                    <f:selectItem itemLabel="#{msg.select} #{msg.invoice}" itemValue="" noSelectionOption="true" />
+                    <f:selectItems value="#{invoice.lfat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
+                </p:selectOneMenu>
+
+                <c:if test="#{profile.username eq invoice.prod.empId.username}">
+                    <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_invoice').show();" />
+                    <c:if test="#{invoice.idInv ne 0}">                                
+                        <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_inv').show();" />
+                        <p:commandButton type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
+                        <p:commandButton immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{invoice.deleteInvoice}" update="frm_inv"/>
+                        <br/>
+                        <br/>
+                        <p:commandButton type="button" value="#{msg.add} #{msg.line}" onclick="PF('dlg_line').show();" />
+                    </c:if>
+                </c:if>
+
+                <p:growl id="msgs" showDetail="true"/>
+
+                <br/>
+                <br/>
+
+                <p:remoteCommand name="refreshFooter" update="tab_invoices"/>
+
+                <p:dataTable id="tab_invoices" var="i" value="#{invoice.lline}" editable="true" style="margin-bottom:20px" rendered="#{invoice.idInv ne 0}">
+                    <f:facet name="header">
+                        #{msg.table_invoices}
+                    </f:facet>
+
+                    <p:ajax event="rowEdit" partialSubmit="true" listener="#{invoice.onRowEdit}" update=":frm_inv:msgs" oncomplete="refreshFooter();" />
+                    <p:ajax event="rowEditCancel" listener="#{invoice.onRowCancel}" update=":frm_inv:msgs" />
+
+                    <p:column headerText="#{msg.id}">
+                        <h:outputText value="#{i.id}" />
+                    </p:column>
+                    <p:column headerText="#{msg.name}">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{i.line}" /></f:facet>
+                            <f:facet name="input"><p:inputText value="#{i.line}" style="width:100%"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="#{msg.value} [€]">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{i.value}" /></f:facet>
+                            <f:facet name="input"><p:inputNumber value="#{i.value}" style="width:100%" decimalSeparator="," thousandSeparator="." /></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="#{msg.list}" style="text-align: center">
+                        <p:commandButton icon="ui-icon ui-icon-search" action="list" style="width:20px;height:20px" >
+                            <f:setPropertyActionListener value="#{i}" target="#{invoice.prod}" />
+                        </p:commandButton>
+                    </p:column>
+                    <p:column style="width:50px">
+                        <ui:fragment rendered="#{profile.username eq invoice.prod.empId.username}">
+                            <p:rowEditor/>
+                            <p:commandLink styleClass="ui-icon ui-icon-trash" action="#{invoice.removeLine(i.id)}" update="tab_invoices"/>
+                        </ui:fragment> 
+                    </p:column>
+                    <p:columnGroup type="footer" rendered="#{invoice.lline.size() gt 0}">
+                        <p:row>
+                            <p:column colspan="2" footerText="#{msg.total}: " style="text-align:right" />
+                            <p:column colspan="3" footerText="#{invoice.total}" style="text-align:left" />                         
+                        </p:row>
+                    </p:columnGroup>
+                </p:dataTable>
+            </h:form>
+
+            <p:dialog header="#{msg.add} #{msg.invoice}" widgetVar="dlg_invoice" modal="true" resizable="false" appendTo="@(body)"> 
+                <h:form>
+                    <p:outputLabel for="in" value="#{msg.add} #{msg.invoice}:" />
+                    <p:inputText id="in" value="#{invoice.strInv}" required="true" />
+                    <br/>
+                    <p:message for="in" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.add}" action="#{invoice.addInvoice}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_invoice').hide()" update=":frm_inv @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_invoice').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.change} #{msg.invoice}" widgetVar="dlg_change_inv" modal="true" resizable="false" appendTo="@(body)">                           
+                <h:form>
+                    <p:outputLabel for="in" value="#{msg.change} #{msg.invoice}:" />
+                    <p:inputText id="in" value="#{invoice.strInv}" required="true" />
+                    <br/>
+                    <p:message for="in" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.save}" action="#{invoice.changeInvoice}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_change_inv').hide()" update=":frm_inv @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_inv').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.add} #{msg.line}" widgetVar="dlg_line" modal="true" resizable="false" appendTo="@(body)"> 
+                <h:form>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="#{msg.add} #{msg.line}:" />
+                        <p:inputText value="#{invoice.strLine}" />
+
+                        <p:outputLabel for="in" value="#{msg.add} #{msg.value}:" />
+                        <p:inputNumber id="in" value="#{invoice.value}" symbol=" €" symbolPosition="s" 
+                                       decimalSeparator="," thousandSeparator="." required="true" />  
+                    </h:panelGrid>
+                    <p:message for="in" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.add}" action="#{invoice.addLine}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_line').hide()" update=":frm_inv @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_line').hide()"/>
+                </h:form>
+            </p:dialog>
         </ui:define>
     </ui:composition>
 </html>
