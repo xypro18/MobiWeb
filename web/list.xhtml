@@ -4,8 +4,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:f="http://java.sun.com/jsf/core">
 
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.list}</ui:define>
@@ -16,7 +15,7 @@
                     <f:facet name="header">
                         #{msg.select} #{msg.product}
                     </f:facet>
-                    <p:column headerText="#{msg.product} #{msg.id}" filterBy="#{p.id}" filterMatchMode="exact">
+                    <p:column style="width:150px;text-align:center" headerText="#{msg.product} #{msg.id}" filterBy="#{p.id}" filterMatchMode="exact">
                         <h:outputText value="#{p.id}" />
                     </p:column>
                     <p:column headerText="#{msg.category}" filterBy="#{p.subcatId.catId.name}" filterMatchMode="contains">

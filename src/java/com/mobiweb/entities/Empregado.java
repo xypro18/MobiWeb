@@ -94,7 +94,7 @@ public class Empregado implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "empId", fetch = FetchType.LAZY)
     private Collection<Produto> produtoCollection;
 
     public Empregado() {

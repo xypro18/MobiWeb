@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Categoria.findAll", query = "SELECT c FROM Categoria c")
     , @NamedQuery(name = "Categoria.findById", query = "SELECT c FROM Categoria c WHERE c.id = :id")
     , @NamedQuery(name = "Categoria.findByName", query = "SELECT c FROM Categoria c WHERE c.name = :name")
+    , @NamedQuery(name = "Categoria.hasName", query = "SELECT c FROM Categoria c WHERE lower(c.name) = lower(:name)")
     , @NamedQuery(name = "Categoria.findByCreated", query = "SELECT c FROM Categoria c WHERE c.created = :created")
     , @NamedQuery(name = "Categoria.findByModified", query = "SELECT c FROM Categoria c WHERE c.modified = :modified")})
 public class Categoria implements Serializable {
@@ -59,7 +60,7 @@ public class Categoria implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "catId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "catId", fetch = FetchType.LAZY)
     private Collection<Subcategoria> subcategoriaCollection;
 
     public Categoria() {

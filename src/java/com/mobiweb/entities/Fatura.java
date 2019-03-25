@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Fatura.findAll", query = "SELECT f FROM Fatura f")
     , @NamedQuery(name = "Fatura.findById", query = "SELECT f FROM Fatura f WHERE f.id = :id")
     , @NamedQuery(name = "Fatura.findByName", query = "SELECT f FROM Fatura f WHERE f.name = :name")
+    , @NamedQuery(name = "Fatura.hasName", query = "SELECT f FROM Fatura f WHERE lower(f.name) = lower(:name) AND f.prodId.id = :id")
     , @NamedQuery(name = "Fatura.findByProdId", query = "SELECT f FROM Fatura f WHERE f.prodId.id = :prodId")
     , @NamedQuery(name = "Fatura.findByCreated", query = "SELECT f FROM Fatura f WHERE f.created = :created")
     , @NamedQuery(name = "Fatura.findByModified", query = "SELECT f FROM Fatura f WHERE f.modified = :modified")})
@@ -65,7 +66,7 @@ public class Fatura implements Serializable {
     @JoinColumn(name = "PROD_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Produto prodId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "fatId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "fatId", fetch = FetchType.LAZY)
     private Collection<Linhasdefatura> linhasdefaturaCollection;
 
     public Fatura() {

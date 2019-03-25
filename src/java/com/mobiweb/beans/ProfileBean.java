@@ -11,8 +11,12 @@ import com.mobiweb.resources.PBKDF2;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -21,16 +25,25 @@ import javax.inject.Inject;
 @Named("profile")
 @SessionScoped
 public class ProfileBean implements Serializable {
+
     private String username;
     private String password;
-    private Empregado emp = new Empregado();
+    private Empregado emp;
 
     @Inject
     GenericJpaDao dao;
 
     public ProfileBean() {
     }
-        
+
+    @PostConstruct
+    public void init() {
+        username = null;
+        password = null;
+        emp = new Empregado();
+        System.out.println("novo empregado");
+    }
+
     //Valida username e password 
     public String validadeUserLogin() {
         username = username.toLowerCase();
@@ -38,31 +51,66 @@ public class ProfileBean implements Serializable {
         if (emp != null && emp.getPassword().equals(PBKDF2.getHash(password.toCharArray(), username))) {
             return "product";
         } else {
+            //Mensagem de erro para user/pass invalido
+            produceGrowlError("worng_pass_user");
             return null;
         }
     }
-    
+
     //Regista utilizador
     public String registerUser() {
         username = emp.getUsername().toLowerCase();
-        emp.setUsername(username);
-        String hash = PBKDF2.getHash(emp.getPassword().toCharArray(), username);
-        emp.setPassword(hash);
-        dao.save(emp);
-        return "product";
+        if (dao.findByUsername(Empregado.class, username) == null) {
+            emp.setUsername(username);
+            String hash = PBKDF2.getHash(emp.getPassword().toCharArray(), username);
+            emp.setPassword(hash);
+            dao.save(emp);
+            return "product";
+        } else {
+            //Mensagem de erro quando utilizador já existe
+            produceGrowlError("user_exists");
+            return null;
+        }
+    }
+
+    //Edita perfil do utilizador
+    public String saveChanges() {
+        dao.update(emp);
+        produceGrowlInfo("change_success");
+        return "profile";
     }
     
+    //Cancela alteração do perfil do utilizador
+    public String cancelChanges() {
+        produceGrowlInfo("edit_cancel");
+        return "profile";
+    }
+
+    public String registration() {
+        init();
+        return "registration";
+    }
+
     public String logout() {
-        username = null;
-        password = null;
-        emp = null;
+        init();
         return "login";
+    }
+
+    private void produceGrowlInfo(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
+        RequestContext.getCurrentInstance().update("growl");
+    }
+
+    private void produceGrowlError(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, rb.getString("error"), rb.getString(msg)));
+        RequestContext.getCurrentInstance().update("growl");
     }
 
     /////////////////////
     //GETTERS E SETTERS//
     /////////////////////
-
     public Empregado getEmp() {
         return emp;
     }
@@ -85,6 +133,6 @@ public class ProfileBean implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    } 
+    }
 
 }

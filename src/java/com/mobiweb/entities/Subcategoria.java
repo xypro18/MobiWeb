@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Subcategoria.findById", query = "SELECT s FROM Subcategoria s WHERE s.id = :id")
     , @NamedQuery(name = "Subcategoria.findByCatId", query = "SELECT s FROM Subcategoria s WHERE s.catId.id = :catId")
     , @NamedQuery(name = "Subcategoria.findByName", query = "SELECT s FROM Subcategoria s WHERE s.name = :name")
+    , @NamedQuery(name = "Subcategoria.hasName", query = "SELECT s FROM Subcategoria s WHERE lower(s.name) = lower(:name) AND s.catId.id = :id")
     , @NamedQuery(name = "Subcategoria.findByCreated", query = "SELECT s FROM Subcategoria s WHERE s.created = :created")
     , @NamedQuery(name = "Subcategoria.findByModified", query = "SELECT s FROM Subcategoria s WHERE s.modified = :modified")})
 public class Subcategoria implements Serializable {
@@ -62,7 +63,7 @@ public class Subcategoria implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "subcatId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "subcatId", fetch = FetchType.LAZY)
     private Collection<Produto> produtoCollection;
     @JoinColumn(name = "CAT_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)

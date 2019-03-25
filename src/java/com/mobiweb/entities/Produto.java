@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Produto.findAll", query = "SELECT p FROM Produto p")
     , @NamedQuery(name = "Produto.findById", query = "SELECT p FROM Produto p WHERE p.id = :id")
     , @NamedQuery(name = "Produto.findByName", query = "SELECT p FROM Produto p WHERE p.name = :name")
+    , @NamedQuery(name = "Produto.hasName", query = "SELECT p FROM Produto p WHERE lower(p.name) = lower(:name) AND p.subcatId.id = :id")
     , @NamedQuery(name = "Produto.findBySubcatId", query = "SELECT p FROM Produto p WHERE p.subcatId.id = :subcatId")
     , @NamedQuery(name = "Produto.findByCreated", query = "SELECT p FROM Produto p WHERE p.created = :created")
     , @NamedQuery(name = "Produto.findByModified", query = "SELECT p FROM Produto p WHERE p.modified = :modified")})
@@ -68,7 +69,7 @@ public class Produto implements Serializable {
     @JoinColumn(name = "SUBCAT_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Subcategoria subcatId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prodId", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "prodId", fetch = FetchType.LAZY)
     private Collection<Fatura> faturaCollection;
 
     public Produto() {

@@ -1,14 +1,10 @@
 package com.mobiweb.dao;
 
-import com.mobiweb.exceptions.ItemException;
-import com.mobiweb.entities.Categoria;
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.Stateless;
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -38,13 +34,18 @@ public class GenericJpaDao<T extends Serializable> {
     public List<T> findByProdId(Class<T> clazz, int id) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByProdId").setParameter("prodId", id).getResultList();
     }
-    
+
     public List<T> findByFatId(Class<T> clazz, int id) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByFatId").setParameter("fatId", id).getResultList();
     }
 
     public T findByUsername(Class<T> clazz, String user) {
-        return (T) em.createNamedQuery(clazz.getSimpleName() + ".findByUsername").setParameter("username", user).getSingleResult();
+        try {
+            return (T) em.createNamedQuery(clazz.getSimpleName() + ".findByUsername").setParameter("username", user).getSingleResult();
+        } catch (NoResultException e) {
+            //Caso não exista utilizador na BD retorna null
+            return null;
+        }
     }
 
     public void save(T entity) {
@@ -71,56 +72,11 @@ public class GenericJpaDao<T extends Serializable> {
         delete(entity);
     }
 
-    public boolean addCategory(Categoria item) throws ItemException {
-        boolean success = true;
-        try {
-            System.out.println(" item details" + item.getId());
-            em.persist(item);
-            em.flush();
-        } catch (EntityExistsException pe) {
-            success = false;
-            throw new ItemException("Item with id " + item.getId() + " exists.");
-        }
-        return success;
+    public boolean hasName(Class<T> clazz, String name) {
+        return !em.createNamedQuery(clazz.getSimpleName() + ".hasName").setParameter("name", name).setMaxResults(1).getResultList().isEmpty();
     }
-
-//    public void deleteItem(int id) throws ItemException {
-//       Item item= null;
-//        item= em.find(Item.class, id);
-//        if (item != null) {
-//            em.remove(item);
-//        } else {
-//            throw new ItemException("Employee with id " + id + " does not exist.");
-//        }
-//    }
-//
-//    public void updateItem(Item item) {
-//        em.merge(item);
-//    }
-//
-//    public Item findItem(int id) {
-//        return em.find(Item.class, id);
-//    }
-//
-//    public List<Categoria> getAllItems() {
-//        StringBuilder queryText = new StringBuilder("SELECT item FROM Categoria as item ORDER BY item.id");
-//        TypedQuery<Categoria> query = em.createQuery(queryText.toString(), Categoria.class);
-//        List<Categoria> allItems = query.getResultList();
-//        return allItems;
-//    }
-    public int count(Class<T> clazz) {
-        javax.persistence.criteria.CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-        javax.persistence.criteria.Root<Categoria> rt = cq.from(clazz);
-        cq.select(em.getCriteriaBuilder().count(rt));
-        javax.persistence.Query q = em.createQuery(cq);
-        return ((Long) q.getSingleResult()).intValue();
+    
+    public boolean hasName(Class<T> clazz, String name, int parentID) {
+        return !em.createNamedQuery(clazz.getSimpleName() + ".hasName").setParameter("name", name).setParameter("id", parentID).setMaxResults(1).getResultList().isEmpty();
     }
-//   public List<String> getGenres() {   
-//      StringBuilder queryText = new StringBuilder("SELECT DISTINCT item.genre FROM Item as item ORDER BY item.genre");
-//        TypedQuery<String> query = em.createQuery(queryText.toString(), String.class);
-//       
-//        List<String> allgenres = query.getResultList();
-//        
-//        return allgenres;
-//    }  
 }

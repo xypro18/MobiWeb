@@ -6,12 +6,12 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-    <ui:composition template="/templates/masterLayout.xhtml">
+
+    <ui:composition template="/templates/masterLayout.xhtml">        
         <ui:define name="north_page">#{msg.man_product}</ui:define>
         <ui:define name="center">
+            <p:growl id="growl" showDetail="true"/>
             <h:form id="frm_prod">
-
-                <p:commandButton immediate="true" icon="ui-icon ui-icon-circle-minus" style="width:25px;height:25px" update="tab_prod"/>
 
                 <h:panelGrid id="grid" columns="3" >
 
@@ -21,14 +21,17 @@
                         <f:selectItem itemLabel="#{msg.select} #{msg.category}" itemValue="" noSelectionOption="true" />
                         <f:selectItems value="#{product.lcat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
                     </p:selectOneMenu>
-
                     <p:column>
                         <c:if test="#{profile.emp.role eq 'Administrator'}">
-                            <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_cat').show();" />
+                            <p:commandButton id="btn_add" type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_cat').show();" />
+                            <p:tooltip for="btn_add" value="#{msg.add}" position="top" hideEvent="mouseout click"/>
                             <c:if test="#{product.idCat ne 0}">                                
-                                <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_cat').show();" />
-                                <p:commandButton type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
-                                <p:commandButton immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{product.deleteCategory}" update="frm_prod"/>
+                                <p:commandButton id="btn_edit" type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_cat').show();" />
+                                <p:tooltip for="btn_edit" value="#{msg.edit}" position="top" hideEvent="mouseout click"/>
+                                <p:commandButton id="btn_move" type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
+                                <p:tooltip for="btn_move" value="#{msg.move}" position="top" hideEvent="mouseout click"/>
+                                <p:commandButton id="btn_delete" immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{product.deleteCategory}" update="frm_prod"/>
+                                <p:tooltip for="btn_delete" value="#{msg.delete}" position="top" hideEvent="mouseout click"/>
                             </c:if>
                         </c:if>  
                     </p:column>
@@ -42,31 +45,36 @@
                         </p:selectOneMenu>
                         <p:column>
                             <c:if test="#{profile.emp.role eq 'Administrator'}">
-                                <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_sub').show();" />
+                                <p:commandButton id="btn_add2" type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_sub').show();" />
+                                <p:tooltip for="btn_add2" value="#{msg.add}" position="bottom" hideEvent="mouseout click"/>
                                 <c:if test="#{product.idSub ne 0}">
-                                    <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_sub').show();" />
-                                    <p:commandButton type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
-                                    <p:commandButton immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{product.deleteSubcategory}" update="frm_prod"/>
+                                    <p:commandButton id="btn_edit2" type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_sub').show();" />
+                                    <p:tooltip for="btn_edit2" value="#{msg.edit}" position="bottom" hideEvent="mouseout click"/>
+                                    <p:commandButton id="btn_move2" type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
+                                    <p:tooltip for="btn_move2" value="#{msg.move}" position="bottom" hideEvent="mouseout click"/>
+                                    <p:commandButton id="btn_delete2" immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{product.deleteSubcategory}" update="frm_prod"/>
+                                    <p:tooltip for="btn_delete2" value="#{msg.delete}" position="bottom" hideEvent="mouseout click"/>
                                 </c:if>
                             </c:if>
                         </p:column>
                     </c:if> 
 
                 </h:panelGrid>
-                <br/><br/>
-                <p:growl id="msgs" showDetail="true"/>
+                <br/><br/>                
 
                 <p:commandButton type="button" value="#{msg.add} #{msg.product}" onclick="PF('dlg_prod').show();" rendered="#{product.idSub ne 0}"/>
+
                 <br/><br/>
+
                 <p:dataTable id="tab_prod" var="p" value="#{product.lprod}" editable="true" style="margin-bottom:20px" rendered="#{product.idSub ne 0}">
                     <f:facet name="header">
                         #{msg.table_products}
                     </f:facet>
 
-                    <p:ajax event="rowEdit" listener="#{product.onRowEdit}" update=":frm_prod:msgs" />
-                    <p:ajax event="rowEditCancel" listener="#{product.onRowCancel}" update=":frm_prod:msgs" />
+                    <p:ajax event="rowEdit" listener="#{product.onRowEdit}" update="growl" />
+                    <p:ajax event="rowEditCancel" listener="#{product.onRowCancel}" update="growl" />
 
-                    <p:column headerText="#{msg.id}">
+                    <p:column style="width:100px;text-align:center" headerText="#{msg.id}">
                         <h:outputText value="#{p.id}" />
                     </p:column>
 
@@ -77,11 +85,11 @@
                         </p:cellEditor>
                     </p:column>
 
-                    <p:column headerText="#{msg.manager}">
+                    <p:column style="width:200px;" headerText="#{msg.manager}">
                         <h:outputText value="#{p.empId.username}" />
                     </p:column>
 
-                    <p:column headerText="#{msg.invoices}" style="text-align: center">
+                    <p:column style="width:100px;text-align:center" headerText="#{msg.invoices}" >
                         <p:commandButton icon="ui-icon ui-icon-search" action="#{invoice.acceptProduct(0)}" style="width:20px;height:20px" >
                             <f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />
                         </p:commandButton>
@@ -94,7 +102,73 @@
                     </p:column>
                 </p:dataTable>
             </h:form>
-            <ui:include src="dialogs.xhtml"/>
+
+            <!-- Dialogs para adição/alteração de: Categoria, Subcategoria e Produto-->
+
+            <p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlg_cat" modal="true" resizable="false" appendTo="@(body)"> 
+                <h:form>
+                    <p:outputLabel for="in_cat" value="#{msg.add} #{msg.category}:" />
+                    <p:inputText id="in_cat" value="#{product.strCat}" required="true" />
+                    <br/>
+                    <p:message for="in_cat" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.add}" action="#{product.addCategory}" update=":frm_prod @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_cat').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.add} #{msg.subcategory}" widgetVar="dlg_sub" modal="true" resizable="false" appendTo="@(body)"> 
+                <h:form id="frm_sub">
+                    <p:outputLabel for="in_sub" value="#{msg.add} #{msg.subcategory}:" />
+                    <p:inputText id="in_sub" value="#{product.strSub}" required="true" />
+                    <br/>
+                    <p:message for="in_sub" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.add}" action="#{product.addSubCategory}" update=":frm_prod frm_sub"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_sub').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.add} #{msg.product}" widgetVar="dlg_prod" modal="true" resizable="false" appendTo="@(body)"> 
+                <h:form>
+                    <p:outputLabel for="in_prod" value="#{msg.add} #{msg.product}:" />
+                    <p:inputText id="in_prod" value="#{product.strProd}" required="true" />
+                    <br/>
+                    <p:message for="in_prod" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.add}" action="#{product.addProduct}" update=":frm_prod @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_prod').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.change} #{msg.category}" widgetVar="dlg_change_cat" modal="true" resizable="false" appendTo="@(body)">                           
+                <h:form>
+                    <p:outputLabel for="in" value="#{msg.change} #{msg.category}:" />
+                    <p:inputText id="in" value="#{product.strCat}" required="true" />
+                    <br/>
+                    <p:message for="in" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.save}" action="#{product.changeCategory}" update=":frm_prod @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_cat').hide()"/>
+                </h:form>
+            </p:dialog>
+
+            <p:dialog header="#{msg.change} #{msg.subcategory}" widgetVar="dlg_change_sub" modal="true" resizable="false" appendTo="@(body)">                           
+                <h:form>
+                    <p:outputLabel for="in" value="#{msg.change} #{msg.subcategory}:" />
+                    <p:inputText id="in" value="#{product.strSub}" required="true" />
+                    <br/>
+                    <p:message for="in" display="text"/>
+                    <br/>
+                    <p:commandButton value="#{msg.save}" action="#{product.changeSubcategory}" update=":frm_prod @form"/>
+                    <p:spacer width="20" />
+                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_sub').hide()"/>
+                </h:form>
+            </p:dialog>
 
         </ui:define>
     </ui:composition>

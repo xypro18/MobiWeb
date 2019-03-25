@@ -5,9 +5,11 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
+    
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.profile}</ui:define>
         <ui:define name="center">
+            <p:growl id="growl" showDetail="true"/>
             <h:form>
                 <h:panelGrid id="grid" columns="2" cellpadding="5">
                     <h:outputText value="#{msg.firsname}:" />

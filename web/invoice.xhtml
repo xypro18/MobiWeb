@@ -10,6 +10,8 @@
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.man_invoice}</ui:define>
         <ui:define name="center">
+            
+            <p:growl id="growl" showDetail="true"/>
             <h:panelGrid columns="2" cellspacing="10">
                 <h:outputText value="#{msg.category}:  " />
                 <h:outputText value="#{invoice.prod.subcatId.catId.name}" />
@@ -30,21 +32,23 @@
                 </p:selectOneMenu>
 
                 <c:if test="#{profile.username eq invoice.prod.empId.username}">
-                    <p:commandButton type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_invoice').show();" />
+                    <p:commandButton id="btn_add" type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_invoice').show();" />
+                    <p:tooltip for="btn_add" value="#{msg.add}" position="top" hideEvent="mouseout click"/>
                     <c:if test="#{invoice.idInv ne 0}">                                
-                        <p:commandButton type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_inv').show();" />
-                        <p:commandButton type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
-                        <p:commandButton immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{invoice.deleteInvoice}" update="frm_inv"/>
+                        <p:commandButton id="btn_edit" type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_inv').show();" />
+                        <p:tooltip for="btn_edit" value="#{msg.edit}" position="top" hideEvent="mouseout click"/>
+                        <p:commandButton id="btn_move" type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
+                        <p:tooltip for="btn_move" value="#{msg.move}" position="top" hideEvent="mouseout click"/>
+                        <p:commandButton id="btn_delete" immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{invoice.deleteInvoice}" update="frm_inv"/>
+                        <p:tooltip for="btn_delete" value="#{msg.delete}" position="top" hideEvent="mouseout click"/>
                         <br/>
                         <br/>
                         <p:commandButton type="button" value="#{msg.add} #{msg.line}" onclick="PF('dlg_line').show();" />
                     </c:if>
-                </c:if>
-
-                <p:growl id="msgs" showDetail="true"/>
+                </c:if>               
 
                 <br/>
-                <br/>
+                <br/>                
 
                 <p:remoteCommand name="refreshFooter" update="tab_invoices"/>
 
@@ -53,10 +57,10 @@
                         #{msg.table_invoices}
                     </f:facet>
 
-                    <p:ajax event="rowEdit" partialSubmit="true" listener="#{invoice.onRowEdit}" update=":frm_inv:msgs" oncomplete="refreshFooter();" />
-                    <p:ajax event="rowEditCancel" listener="#{invoice.onRowCancel}" update=":frm_inv:msgs" />
+                    <p:ajax event="rowEdit" partialSubmit="true" listener="#{invoice.onRowEdit}" update="growl" oncomplete="refreshFooter();" />
+                    <p:ajax event="rowEditCancel" listener="#{invoice.onRowCancel}" update="growl"  />
 
-                    <p:column headerText="#{msg.id}">
+                    <p:column style="width:100px;text-align:center" headerText="#{msg.id}">
                         <h:outputText value="#{i.id}" />
                     </p:column>
                     <p:column headerText="#{msg.name}">
@@ -65,16 +69,11 @@
                             <f:facet name="input"><p:inputText value="#{i.line}" style="width:100%"/></f:facet>
                         </p:cellEditor>
                     </p:column>
-                    <p:column headerText="#{msg.value} [€]">
+                    <p:column style="width:200px" headerText="#{msg.value} [€]">
                         <p:cellEditor>
                             <f:facet name="output"><h:outputText value="#{i.value}" /></f:facet>
                             <f:facet name="input"><p:inputNumber value="#{i.value}" style="width:100%" decimalSeparator="," thousandSeparator="." /></f:facet>
                         </p:cellEditor>
-                    </p:column>
-                    <p:column headerText="#{msg.list}" style="text-align: center">
-                        <p:commandButton icon="ui-icon ui-icon-search" action="list" style="width:20px;height:20px" >
-                            <f:setPropertyActionListener value="#{i}" target="#{invoice.prod}" />
-                        </p:commandButton>
                     </p:column>
                     <p:column style="width:50px">
                         <ui:fragment rendered="#{profile.username eq invoice.prod.empId.username}">
@@ -85,7 +84,7 @@
                     <p:columnGroup type="footer" rendered="#{invoice.lline.size() gt 0}">
                         <p:row>
                             <p:column colspan="2" footerText="#{msg.total}: " style="text-align:right" />
-                            <p:column colspan="3" footerText="#{invoice.total}" style="text-align:left" />                         
+                            <p:column colspan="2" footerText="#{invoice.total}" style="text-align:left" />                         
                         </p:row>
                     </p:columnGroup>
                 </p:dataTable>
@@ -98,7 +97,7 @@
                     <br/>
                     <p:message for="in" display="text"/>
                     <br/>
-                    <p:commandButton value="#{msg.add}" action="#{invoice.addInvoice}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_invoice').hide()" update=":frm_inv @form"/>
+                    <p:commandButton value="#{msg.add}" action="#{invoice.addInvoice}" update=":frm_inv @form"/>
                     <p:spacer width="20" />
                     <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_invoice').hide()"/>
                 </h:form>
@@ -111,7 +110,7 @@
                     <br/>
                     <p:message for="in" display="text"/>
                     <br/>
-                    <p:commandButton value="#{msg.save}" action="#{invoice.changeInvoice}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_change_inv').hide()" update=":frm_inv @form"/>
+                    <p:commandButton value="#{msg.save}" action="#{invoice.changeInvoice}" update=":frm_inv @form"/>
                     <p:spacer width="20" />
                     <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_inv').hide()"/>
                 </h:form>

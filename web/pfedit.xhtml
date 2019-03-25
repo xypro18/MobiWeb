@@ -5,10 +5,12 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-    <ui:composition template="/templates/masterLayout.xhtml">
+    
+    <ui:composition template="/templates/masterLayout.xhtml">        
         <ui:define name="north_page">#{msg.profile}</ui:define>
         <ui:define name="center">
-            <h:form>
+            <p:growl id="growl" showDetail="true"/>
+            <h:form>                
                 <h:panelGrid id="grid" columns="3" cellpadding="5">
                     <p:outputLabel for="firstname" value="#{msg.firsname}:" />
                     <p:inputText id="firstname" value="#{profile.emp.firstname}" required="true" />
@@ -16,9 +18,6 @@
                     <p:outputLabel for="lastname" value="#{msg.lastname}:" />
                     <p:inputText id="lastname" value="#{profile.emp.lastname}" required="true" />
                     <p:message for="lastname" display="text"/>
-                    <p:outputLabel for="username" value="#{msg.username}:" />
-                    <p:inputText id="username" value="#{profile.emp.username}" required="true" />
-                    <p:message for="username" display="text"/>
                     <p:outputLabel for="sex" value="#{msg.sex}:" />
                     <p:selectOneRadio id="sex" value="#{profile.emp.sex}" required="true" >
                         <f:selectItem itemLabel="#{msg.male}" itemValue="M" />
@@ -36,9 +35,9 @@
                     <p:message for="role" display="text"/>
                 </h:panelGrid>
                 <br/>
-                <p:commandButton value="#{msg.save}" action="#{profile.save}" update="grid" />
+                <p:commandButton value="#{msg.save}" action="#{profile.saveChanges}" update="grid" />
                 <p:spacer width="20" />
-                <p:commandButton value="#{msg.cancel}" immediate="true" action="profile" />
+                <p:commandButton value="#{msg.cancel}" immediate="true" action="#{profile.cancelChanges}" update="grid" />
             </h:form>
         </ui:define>
     </ui:composition>

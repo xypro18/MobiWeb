@@ -11,12 +11,14 @@ import com.mobiweb.entities.Produto;
 import com.mobiweb.entities.Subcategoria;
 import java.io.Serializable;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
 
 /**
@@ -27,7 +29,6 @@ import org.primefaces.event.RowEditEvent;
 @SessionScoped
 public class ProductBean implements Serializable {
 
-    //Propriedades expostas à View
     private int idCat;
     private int idSub;
     private String strCat;
@@ -48,48 +49,60 @@ public class ProductBean implements Serializable {
         generateCategories();
     }
 
-    public void info() {
-        FacesContext.getCurrentInstance().addMessage("mid", new FacesMessage("Second Message", "Additional Message Detail"));
-    }
-
     public void addCategory() {
-        //TODO: IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Categoria cat = new Categoria(strCat);
-        dao.save(cat);
-        generateCategories();
-        idCat = cat.getId();
-        strCat = "";
-        generateSubcategories();
-        onCategoryChange();
+        if (dao.hasName(Categoria.class, strCat)) {
+            produceGrowlError("record_exists");
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('dlg_cat').hide()");
+            Categoria cat = new Categoria(strCat);
+            dao.save(cat);
+            generateCategories();
+            idCat = cat.getId();
+            strCat = "";
+            generateSubcategories();
+            onCategoryChange();
+        }
     }
 
     public void addSubCategory() {
-        //TODO: IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Subcategoria sub = new Subcategoria(strSub, getCategory());
-        dao.save(sub);
-        generateSubcategories();
-        idSub = sub.getId();
-        strSub = "";
-        onSubCategoryChange();
+        if (dao.hasName(Subcategoria.class, strSub, idCat)) {
+            produceGrowlError("record_exists");
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('dlg_sub').hide()");
+            Subcategoria sub = new Subcategoria(strSub, getCategory());
+            dao.save(sub);
+            generateSubcategories();
+            idSub = sub.getId();
+            strSub = "";
+            onSubCategoryChange();
+        }
     }
 
     public void addProduct() {
-        //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Produto p = new Produto(strProd, getSubcategory(), profile.getEmp());
-        dao.save(p);
-        generateProducts();
-        strProd = "";
+        if (dao.hasName(Produto.class, strProd, idSub)) {
+            produceGrowlError("record_exists");
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('dlg_prod').hide()");
+            Produto p = new Produto(strProd, getSubcategory(), profile.getEmp());
+            dao.save(p);
+            generateProducts();
+            strProd = "";
+        }
     }
 
     public void changeCategory() {
-        //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Categoria cat = getCategory();
-        cat.setName(strCat);
-        dao.update(cat);
-        strCat = "";
-        generateCategories();
-        generateSubcategories();
-        generateProducts();
+        if (dao.hasName(Categoria.class, strCat)) {
+            produceGrowlError("record_exists");
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('dlg_change_cat').hide()");
+            Categoria cat = getCategory();
+            cat.setName(strCat);
+            dao.update(cat);
+            strCat = "";
+            generateCategories();
+            generateSubcategories();
+            generateProducts();
+        }
     }
 
     public void deleteCategory() {
@@ -100,13 +113,17 @@ public class ProductBean implements Serializable {
     }
 
     public void changeSubcategory() {
-        //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Subcategoria sub = getSubcategory();
-        sub.setName(strSub);
-        dao.update(sub);
-        strSub = "";
-        generateSubcategories();
-        generateProducts();
+        if (dao.hasName(Subcategoria.class, strSub, idCat)) {
+            produceGrowlError("record_exists");
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('dlg_change_sub').hide()");
+            Subcategoria sub = getSubcategory();
+            sub.setName(strSub);
+            dao.update(sub);
+            strSub = "";
+            generateSubcategories();
+            generateProducts();
+        }
     }
 
     public void deleteSubcategory() {
@@ -151,16 +168,17 @@ public class ProductBean implements Serializable {
 
     public void onRowEdit(RowEditEvent event) {
         Produto p = (Produto) event.getObject();
-        dao.update(p);
-        //TODO Get messages
-        FacesMessage msg = new FacesMessage("Product Changed:", p.getId().toString());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        if (dao.hasName(Produto.class, p.getName(), idSub)) {
+            produceGrowlError("record_exists");
+            generateProducts();
+        } else {
+            dao.update(p);
+            produceGrowlInfo("change_success");
+        }
     }
 
     public void onRowCancel(RowEditEvent event) {
-        //TODO get messages
-        FacesMessage msg = new FacesMessage("Edit Canceled");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        produceGrowlInfo("edit_cancel");
     }
 
     public void removeProduct(int id) {
@@ -173,6 +191,17 @@ public class ProductBean implements Serializable {
         generateSubcategories();
         generateProducts();
         return "product";
+    }
+
+    private void produceGrowlInfo(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
+    }
+
+    private void produceGrowlError(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, rb.getString("error"), rb.getString(msg)));
+        RequestContext.getCurrentInstance().update("growl");
     }
 
     /////////////////////

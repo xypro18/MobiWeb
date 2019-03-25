@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mobiweb.beans;
 
 import com.mobiweb.dao.GenericJpaDao;
@@ -11,52 +6,69 @@ import com.mobiweb.entities.Linhasdefatura;
 import com.mobiweb.entities.Produto;
 import java.io.Serializable;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
 
-/**
- *
- * @author CR
- */
+//Classe controladora das Faturas
 @Named("invoice")
 @SessionScoped
 public class InvoiceBean implements Serializable {
 
-    private int idInv;
+    //Atributos associados à view invoice.xhtml e à base de dados que representam a Fatura e Linhas de Fatura
+    private int idInv;                  //Identificador da Fatura associado ao dropdown da view
     private double value;
     private double total;
     private String strInv;
     private String strLine;
-    private Produto prod = null;
+    private Produto prod = null;        //A Fatura só faz sentido associada a um produto
     private List<Fatura> lfat = null;
     private List<Linhasdefatura> lline = null;
 
+    //Objeto DAO que faz persistência e leitura da base de dados
     @Inject
     GenericJpaDao dao;
 
+    //Adição de Fatura    
     public void addInvoice() {
-        Fatura fat = new Fatura(strInv, prod);
-        dao.save(fat);
-        idInv = fat.getId();
-        strInv = "";
-        generateInvoices();
-        generateLines();
+        //Verifica por JPQL se já existe nome (case insensitive) associado a um produto
+        if (dao.hasName(Fatura.class, strInv, prod.getId())) {
+            produceGrowlError("record_exists");
+        } else {
+            //Se registo for unico fecha dialog e regista na base de dados
+            RequestContext.getCurrentInstance().execute("PF('dlg_invoice').hide()");
+            Fatura fat = new Fatura(strInv, prod);
+            dao.save(fat);
+            idInv = fat.getId();
+            strInv = "";
+            generateInvoices();
+            generateLines();
+        }
     }
 
+    //Alteração do nome da Fatura
     public void changeInvoice() {
-        //TODO IMPLEMENTAR VERIFICAÇÃO DE REPETIÇÃO
-        Fatura fat = getFatura();
-        fat.setName(strInv);
-        dao.update(fat);
-        strInv = "";
-        generateInvoices();
-        generateLines();
+        //Verifica por JPQL se já existe nome (case insensitive) associado a um produto
+        if (dao.hasName(Fatura.class, strInv, prod.getId())) {
+            produceGrowlError("record_exists");
+        } else {
+            //Se registo for unico fecha dialog e regista na base de dados
+            RequestContext.getCurrentInstance().execute("PF('dlg_change_inv').hide()");
+            Fatura fat = getFatura();
+            fat.setName(strInv);
+            dao.update(fat);
+            strInv = "";
+            generateInvoices();
+            generateLines();
+        }
     }
 
+    //Adição de Linha de Fatura, não é feita verificação de singularidade uma vez que é opcional
     public void addLine() {
         Linhasdefatura lf = new Linhasdefatura(strLine, value, getFatura());
         dao.save(lf);
@@ -65,10 +77,12 @@ public class InvoiceBean implements Serializable {
         generateLines();
     }
 
+    //Leitura de todas as Faturas associadas a um Produto na base de dados
     private void generateInvoices() {
         lfat = dao.findByProdId(Fatura.class, prod.getId());
     }
 
+    //Leitura de todas as Linhas de Fatura associadas a uma Fatura na base de dados
     private void generateLines() {
         lline = dao.findByFatId(Linhasdefatura.class, idInv);
     }
@@ -105,22 +119,29 @@ public class InvoiceBean implements Serializable {
         return "invoice";
     }
 
+    private Fatura getFatura() {
+        return (Fatura) dao.findOne(Fatura.class, idInv);
+    }
+
     public void onRowEdit(RowEditEvent event) {
         Linhasdefatura l = (Linhasdefatura) event.getObject();
         dao.update(l);
-        //TODO Get messages
-        FacesMessage msg = new FacesMessage("Change successfull");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        produceGrowlInfo("change_success");
     }
 
     public void onRowCancel(RowEditEvent event) {
-        //TODO get messages
-        FacesMessage msg = new FacesMessage("Edit Canceled");
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        produceGrowlInfo("edit_cancel");
     }
 
-    private Fatura getFatura() {
-        return (Fatura) dao.findOne(Fatura.class, idInv);
+    private void produceGrowlInfo(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
+    }
+
+    private void produceGrowlError(String msg) {
+        ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, rb.getString("error"), rb.getString(msg)));
+        RequestContext.getCurrentInstance().update("growl");
     }
 
     /////////////////////
