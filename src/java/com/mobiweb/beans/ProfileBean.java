@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.mobiweb.beans;
 
 import com.mobiweb.dao.GenericJpaDao;
@@ -18,10 +13,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.primefaces.context.RequestContext;
 
-/**
- *
- * @author CR
- */
+//Controlador da autenticação e gestão de Perfil
 @Named("profile")
 @SessionScoped
 public class ProfileBean implements Serializable {
@@ -30,18 +22,16 @@ public class ProfileBean implements Serializable {
     private String password;
     private Empregado emp;
 
+    //Objeto DAO que faz persistência e leitura da base de dados
     @Inject
     GenericJpaDao dao;
-
-    public ProfileBean() {
-    }
-
+    
+    //Reinicia campos de utilizador após construção de bean
     @PostConstruct
     public void init() {
         username = null;
         password = null;
         emp = new Empregado();
-        System.out.println("novo empregado");
     }
 
     //Valida username e password 
@@ -86,22 +76,26 @@ public class ProfileBean implements Serializable {
         return "profile";
     }
 
+    //Método usado pela View para redirecionar para o registo
     public String registration() {
         init();
         return "registration";
     }
 
+    //Método usado pela View para encerrar sessão
     public String logout() {
         init();
         return "login";
     }
 
+    //Metodo que produz mensagens de informação
     private void produceGrowlInfo(String msg) {
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
         RequestContext.getCurrentInstance().update("growl");
     }
 
+    //Método que produz mensagens de erro
     private void produceGrowlError(String msg) {
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, rb.getString("error"), rb.getString(msg)));

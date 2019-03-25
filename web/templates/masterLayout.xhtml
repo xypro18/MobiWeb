@@ -5,9 +5,12 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui">
-
+    
+<!--Layout base utilizado por todos os layouts
+    Vista associada ao Locale definido no bean LocaleChanger-->
     <f:view contentType="text/html" locale="#{locale.currLocale}">
 
+<!--    Definição de css para pequenas correcções visuais e título da página-->
         <h:head>
             <h:outputStylesheet library="css" name="styles.css"/>
             <f:facet name="first">
@@ -20,6 +23,7 @@
 
             <p:layout fullPage="true">
 
+<!--            Secção topo-->
                 <p:layoutUnit position="north" >
                     <ui:insert name="north">
                         <h:form>
@@ -37,11 +41,13 @@
                         </h:form>
                     </ui:insert>
                 </p:layoutUnit>
+<!--            Secção esquerda Menu-->
                 <ui:insert name="sideBarLeft">
                     <p:layoutUnit position="west" size="250" header="Menu" collapsible="false">
                         <ui:include src="sideBarLeft.xhtml"/>
                     </p:layoutUnit>
                 </ui:insert>
+<!--            Secção centro ocupada por variádas views-->
                 <p:layoutUnit position="center">
                     <ui:insert name="center"/>
                 </p:layoutUnit>

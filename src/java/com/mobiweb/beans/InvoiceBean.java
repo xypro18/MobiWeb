@@ -87,23 +87,27 @@ public class InvoiceBean implements Serializable {
         lline = dao.findByFatId(Linhasdefatura.class, idInv);
     }
 
+    //Atualiza Linhas de Fatura se Fatura muda, método associado à View
     public void onInvoiceChange() {
         if (idInv != 0) {
             generateLines();
         }
     }
 
+    //Elemina Fatura, e atualiza lista de faturas
     public void deleteInvoice() {
         dao.deleteById(Fatura.class, idInv);
         idInv = 0;
         generateInvoices();
     }
 
+    //Elemina e atualiza linhas de fatura
     public void removeLine(int id) {
         dao.deleteById(Linhasdefatura.class, id);
         generateLines();
     }
 
+    //Utilizado pela view do menu, verifica se existe produto se não existir redirecciona para página de aviso
     public String navigate() {
         if (prod == null) {
             return "invalidInvoice";
@@ -112,6 +116,7 @@ public class InvoiceBean implements Serializable {
         }
     }
 
+    //Aceita produto e gera Faturas e linhas associadas
     public String acceptProduct(int i) {
         idInv = i;
         generateInvoices();
@@ -119,34 +124,37 @@ public class InvoiceBean implements Serializable {
         return "invoice";
     }
 
+    //Obtém fatura
     private Fatura getFatura() {
         return (Fatura) dao.findOne(Fatura.class, idInv);
     }
 
+    //Método que edita tabela de linhas de fatura
     public void onRowEdit(RowEditEvent event) {
         Linhasdefatura l = (Linhasdefatura) event.getObject();
         dao.update(l);
         produceGrowlInfo("change_success");
     }
 
+    //Método que cancela edição da tabela de linhas de fatura
     public void onRowCancel(RowEditEvent event) {
         produceGrowlInfo("edit_cancel");
     }
 
+    //Metodo que produz mensagens de informação
     private void produceGrowlInfo(String msg) {
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
     }
 
+    //Método que produz mensagens de erro
     private void produceGrowlError(String msg) {
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, rb.getString("error"), rb.getString(msg)));
         RequestContext.getCurrentInstance().update("growl");
     }
 
-    /////////////////////
-    //GETTERS E SETTERS//
-    /////////////////////
+    //Calcula o total de todas as linhas de fatura
     public double getTotal() {
         total = 0;
         for (Linhasdefatura lf : lline) {
@@ -154,10 +162,11 @@ public class InvoiceBean implements Serializable {
         }
         return total;
     }
-
-//    public void setTotal(double total) {
-//        this.total = total;
-//    }
+    
+    /////////////////////
+    //GETTERS E SETTERS//
+    /////////////////////
+    
     public String getStrLine() {
         return strLine;
     }

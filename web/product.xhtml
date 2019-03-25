@@ -6,7 +6,8 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-
+    
+<!--Vista que permite a gestão de Produtos-->
     <ui:composition template="/templates/masterLayout.xhtml">        
         <ui:define name="north_page">#{msg.man_product}</ui:define>
         <ui:define name="center">
@@ -103,8 +104,8 @@
                 </p:dataTable>
             </h:form>
 
-            <!-- Dialogs para adição/alteração de: Categoria, Subcategoria e Produto-->
-
+            
+<!--        Dialogs para adição/alteração de: Categoria, Subcategoria e Produto-->
             <p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlg_cat" modal="true" resizable="false" appendTo="@(body)"> 
                 <h:form>
                     <p:outputLabel for="in_cat" value="#{msg.add} #{msg.category}:" />
