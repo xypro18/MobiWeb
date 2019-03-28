@@ -6,8 +6,8 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-    
-<!--Vista que permite a gestão de Produtos-->
+
+    <!--Vista que permite a gestão de Produtos-->
     <ui:composition template="/templates/masterLayout.xhtml">        
         <ui:define name="north_page">#{msg.man_product}</ui:define>
         <ui:define name="center">
@@ -104,8 +104,8 @@
                 </p:dataTable>
             </h:form>
 
-            
-<!--        Dialogs para adição/alteração de: Categoria, Subcategoria e Produto-->
+
+            <!--        Dialogs para adição/alteração de: Categoria, Subcategoria e Produto-->
             <p:dialog header="#{msg.add} #{msg.category}" widgetVar="dlg_cat" modal="true" resizable="false" appendTo="@(body)"> 
                 <h:form>
                     <p:outputLabel for="in_cat" value="#{msg.add} #{msg.category}:" />
@@ -134,10 +134,15 @@
 
             <p:dialog header="#{msg.add} #{msg.product}" widgetVar="dlg_prod" modal="true" resizable="false" appendTo="@(body)"> 
                 <h:form>
-                    <p:outputLabel for="in_prod" value="#{msg.add} #{msg.product}:" />
-                    <p:inputText id="in_prod" value="#{product.strProd}" required="true" />
-                    <br/>
-                    <p:message for="in_prod" display="text"/>
+                    <h:panelGrid columns="3">
+                        <p:outputLabel for="in_prod" value="#{msg.add} #{msg.product}:" />
+                        <p:inputText id="in_prod" value="#{product.strProd}" required="true" />
+                        <p:message for="in_prod" display="text"/>
+                        <p:outputLabel for="in" value="#{msg.add} #{msg.value}:" />
+                        <p:inputNumber id="in" value="#{product.value}" symbol=" €" symbolPosition="s" 
+                                       decimalSeparator="," thousandSeparator="." required="true" />
+                        <p:message for="in" display="text"/>
+                    </h:panelGrid>                    
                     <br/>
                     <p:commandButton value="#{msg.add}" action="#{product.addProduct}" update=":frm_prod @form"/>
                     <p:spacer width="20" />

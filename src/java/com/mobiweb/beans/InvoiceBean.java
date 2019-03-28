@@ -1,12 +1,14 @@
 package com.mobiweb.beans;
 
 import com.mobiweb.dao.GenericJpaDao;
+import com.mobiweb.entities.Empregado;
 import com.mobiweb.entities.Fatura;
 import com.mobiweb.entities.Linhasdefatura;
 import com.mobiweb.entities.Produto;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -22,27 +24,38 @@ public class InvoiceBean implements Serializable {
 
     //Atributos associados à view invoice.xhtml e à base de dados que representam a Fatura e Linhas de Fatura
     private int idInv;                  //Identificador da Fatura associado ao dropdown da view
-    private double value;
     private double total;
     private String strInv;
     private String strLine;
     private Produto prod = null;        //A Fatura só faz sentido associada a um produto
     private List<Fatura> lfat = null;
     private List<Linhasdefatura> lline = null;
+    private Empregado emp;
 
     //Objeto DAO que faz persistência e leitura da base de dados
     @Inject
     GenericJpaDao dao;
 
+    //Injeta o bean do perfil para associar o utilizador ao produto
+    @Inject
+    ProfileBean profile;
+
+    //Guarda referência de empregado, em principio não deve variar na sessão 
+    @PostConstruct
+    public void init() {
+        //TODO: Verificar se alteração de empregado atualiza o atributo
+        emp = profile.getEmp();
+    }
+
     //Adição de Fatura    
     public void addInvoice() {
-        //Verifica por JPQL se já existe nome (case insensitive) associado a um produto
-        if (dao.hasName(Fatura.class, strInv, prod.getId())) {
+        //Verifica por JPQL se já existe nome (case insensitive) associado a um empregado
+        if (dao.hasName(Fatura.class, strInv, emp)) {
             produceGrowlError("record_exists");
         } else {
             //Se registo for unico fecha dialog e regista na base de dados
             RequestContext.getCurrentInstance().execute("PF('dlg_invoice').hide()");
-            Fatura fat = new Fatura(strInv, prod);
+            Fatura fat = new Fatura(strInv, emp);
             dao.save(fat);
             idInv = fat.getId();
             strInv = "";
@@ -54,7 +67,7 @@ public class InvoiceBean implements Serializable {
     //Alteração do nome da Fatura
     public void changeInvoice() {
         //Verifica por JPQL se já existe nome (case insensitive) associado a um produto
-        if (dao.hasName(Fatura.class, strInv, prod.getId())) {
+        if (dao.hasName(Fatura.class, strInv, emp)) {
             produceGrowlError("record_exists");
         } else {
             //Se registo for unico fecha dialog e regista na base de dados
@@ -70,16 +83,16 @@ public class InvoiceBean implements Serializable {
 
     //Adição de Linha de Fatura, não é feita verificação de singularidade uma vez que é opcional
     public void addLine() {
-        Linhasdefatura lf = new Linhasdefatura(strLine, value, getFatura());
+        Linhasdefatura lf = new Linhasdefatura(strLine, getFatura(), prod);
         dao.save(lf);
         strLine = "";
-        value = 0.0;
         generateLines();
     }
 
-    //Leitura de todas as Faturas associadas a um Produto na base de dados
+    //Leitura de todas as Faturas associadas a um Empregado na base de dados
     private void generateInvoices() {
-        lfat = dao.findByProdId(Fatura.class, prod.getId());
+        //TODO: Continua aqui
+        lfat = dao.findByEmpId(Fatura.class, emp.getId());
     }
 
     //Leitura de todas as Linhas de Fatura associadas a uma Fatura na base de dados
@@ -162,11 +175,10 @@ public class InvoiceBean implements Serializable {
         }
         return total;
     }
-    
+
     /////////////////////
     //GETTERS E SETTERS//
     /////////////////////
-    
     public String getStrLine() {
         return strLine;
     }

@@ -26,6 +26,7 @@ public class ProductBean implements Serializable {
     private String strCat;
     private String strSub;
     private String strProd;
+    private double value;
     private List<Categoria> lcat = null;
     private List<Subcategoria> lsub = null;
     private List<Produto> lprod = null;
@@ -82,10 +83,11 @@ public class ProductBean implements Serializable {
             produceGrowlError("record_exists");
         } else {
             RequestContext.getCurrentInstance().execute("PF('dlg_prod').hide()");
-            Produto p = new Produto(strProd, getSubcategory(), profile.getEmp());
+            Produto p = new Produto(strProd, value, getSubcategory(), profile.getEmp());
             dao.save(p);
             generateProducts();
             strProd = "";
+            value = 0.0;
         }
     }
 
@@ -199,6 +201,7 @@ public class ProductBean implements Serializable {
         generateProducts();
     }
 
+    //TODO: Ver necessidade do método
     //Método associado a view da listagem global, que resulta seleção e geração
     //das listas de Categorias, Subcategorias e Produtos seleccionados
     public String acceptCategory() {
