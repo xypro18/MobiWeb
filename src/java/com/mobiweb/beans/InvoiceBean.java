@@ -91,7 +91,6 @@ public class InvoiceBean implements Serializable {
 
     //Leitura de todas as Faturas associadas a um Empregado na base de dados
     private void generateInvoices() {
-        //TODO: Continua aqui
         lfat = dao.findByEmpId(Fatura.class, emp.getId());
     }
 
@@ -120,16 +119,8 @@ public class InvoiceBean implements Serializable {
         generateLines();
     }
 
-    //Utilizado pela view do menu, verifica se existe produto se não existir redirecciona para página de aviso
-    public String navigate() {
-        if (prod == null) {
-            return "invalidInvoice";
-        } else {
-            return "invoice";
-        }
-    }
-
     //Aceita produto e gera Faturas e linhas associadas
+    //TODO: Fiquei por aqui
     public String acceptProduct(int i) {
         idInv = i;
         generateInvoices();

@@ -45,6 +45,11 @@ public class GenericJpaDao<T extends Serializable> {
     public List<T> findByFatId(Class<T> clazz, int id) {
         return em.createNamedQuery(clazz.getSimpleName() + ".findByFatId").setParameter("fatId", id).getResultList();
     }
+    
+    //Encontra todos os registos associados a um Empregado via NamedQuery que se encontra no modelo
+    public List<T> findByEmpId(Class<T> clazz, int id) {
+        return em.createNamedQuery(clazz.getSimpleName() + ".findByEmpId").setParameter("empId", id).getResultList();
+    }
 
     //Encontra username
     public T findByUsername(Class<T> clazz, String user) {
