@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Linhasdefatura.findAll", query = "SELECT l FROM Linhasdefatura l")
     , @NamedQuery(name = "Linhasdefatura.findById", query = "SELECT l FROM Linhasdefatura l WHERE l.id = :id")
     , @NamedQuery(name = "Linhasdefatura.findByFatId", query = "SELECT l FROM Linhasdefatura l WHERE l.fatId.id = :fatId")
+    , @NamedQuery(name = "Linhasdefatura.findByProdId", query = "SELECT l FROM Linhasdefatura l WHERE l.prodId.id = :prodId")
     , @NamedQuery(name = "Linhasdefatura.findByCreated", query = "SELECT l FROM Linhasdefatura l WHERE l.created = :created")
     , @NamedQuery(name = "Linhasdefatura.findByModified", query = "SELECT l FROM Linhasdefatura l WHERE l.modified = :modified")})
 public class Linhasdefatura implements Serializable {

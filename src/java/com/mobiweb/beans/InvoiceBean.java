@@ -45,6 +45,7 @@ public class InvoiceBean implements Serializable {
     public void init() {
         //TODO: Verificar se alteração de empregado atualiza o atributo
         emp = profile.getEmp();
+       
     }
 
     //Adição de Fatura    
@@ -121,10 +122,14 @@ public class InvoiceBean implements Serializable {
 
     //Aceita produto e gera Faturas e linhas associadas
     //TODO: Fiquei por aqui
-    public String acceptProduct(int i) {
-        idInv = i;
-        generateInvoices();
+    public String addProduct(Produto p) {
+        //idInv = i;
         generateLines();
+        for (Linhasdefatura lf : lline) {
+            if (lf.getProdId().getId() != p.getId()) {
+            } else {
+             }
+
         return "invoice";
     }
 

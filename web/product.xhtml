@@ -12,9 +12,9 @@
         <ui:define name="north_page">#{msg.man_product}</ui:define>
         <ui:define name="center">
             <p:growl id="growl" showDetail="true"/>
-            
+
             <ui:include src="/templates/invoiceDropdown.xhtml"/>
-            
+
             <h:form id="frm_prod">
 
                 <h:panelGrid id="grid" columns="3" >
@@ -89,13 +89,21 @@
                         </p:cellEditor>
                     </p:column>
 
+                    <p:column style="width:200px" headerText="#{msg.price} [€]">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{p.price}" /></f:facet>
+                            <f:facet name="input"><p:inputNumber value="#{p.price}" style="width:100%" decimalSeparator="," thousandSeparator="." /></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    
                     <p:column style="width:200px;" headerText="#{msg.manager}">
                         <h:outputText value="#{p.empId.username}" />
                     </p:column>
 
                     <p:column style="width:100px;text-align:center" headerText="#{msg.invoices}" >
-                        <p:commandButton icon="ui-icon ui-icon-search" action="#{invoice.acceptProduct(0)}" style="width:20px;height:20px" >
-                            <f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />
+                        <p:commandButton icon="ui-icon ui-icon-circle-plus" action="#{invoice.acceptProduct(p)}" style="width:20px;height:20px" >
+<!-- Ver necessidade da seguinte tag ou se é possível passar por parametro                        
+<f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />-->
                         </p:commandButton>
                     </p:column>
                     <p:column style="width:50px">
