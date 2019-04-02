@@ -48,6 +48,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Empregado.findByModified", query = "SELECT e FROM Empregado e WHERE e.modified = :modified")})
 public class Empregado implements Serializable {
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empId", fetch = FetchType.LAZY)
+    private Collection<Fatura> faturaCollection;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -227,6 +230,15 @@ public class Empregado implements Serializable {
     @Override
     public String toString() {
         return "com.mobiweb.entities.Empregado[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Fatura> getFaturaCollection() {
+        return faturaCollection;
+    }
+
+    public void setFaturaCollection(Collection<Fatura> faturaCollection) {
+        this.faturaCollection = faturaCollection;
     }
     
 }

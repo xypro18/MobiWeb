@@ -12,6 +12,9 @@
         <ui:define name="north_page">#{msg.man_product}</ui:define>
         <ui:define name="center">
             <p:growl id="growl" showDetail="true"/>
+            
+            <ui:include src="/templates/invoiceDropdown.xhtml"/>
+            
             <h:form id="frm_prod">
 
                 <h:panelGrid id="grid" columns="3" >
@@ -139,7 +142,7 @@
                         <p:inputText id="in_prod" value="#{product.strProd}" required="true" />
                         <p:message for="in_prod" display="text"/>
                         <p:outputLabel for="in" value="#{msg.add} #{msg.value}:" />
-                        <p:inputNumber id="in" value="#{product.value}" symbol=" €" symbolPosition="s" 
+                        <p:inputNumber id="in" value="#{product.price}" symbol=" €" symbolPosition="s" 
                                        decimalSeparator="," thousandSeparator="." required="true" />
                         <p:message for="in" display="text"/>
                     </h:panelGrid>                    

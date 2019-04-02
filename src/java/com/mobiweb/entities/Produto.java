@@ -46,6 +46,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Produto.findByModified", query = "SELECT p FROM Produto p WHERE p.modified = :modified")})
 public class Produto implements Serializable {
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "PRICE")
+    private double price;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "prodId", fetch = FetchType.LAZY)
+    private Collection<Linhasdefatura> linhasdefaturaCollection;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,8 +76,6 @@ public class Produto implements Serializable {
     @JoinColumn(name = "SUBCAT_ID", referencedColumnName = "ID")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Subcategoria subcatId;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "prodId", fetch = FetchType.LAZY)
-    private Collection<Fatura> faturaCollection;
 
     public Produto() {
     }
@@ -84,8 +89,9 @@ public class Produto implements Serializable {
         this.name = name;
     }
 
-    public Produto(String name, Subcategoria sub, Empregado emp) {
+    public Produto(String name, double price, Subcategoria sub, Empregado emp) {
         this.name = name;
+        this.price = price;
         this.subcatId = sub;
         this.empId = emp;
     }
@@ -138,15 +144,6 @@ public class Produto implements Serializable {
         this.subcatId = subcatId;
     }
 
-    @XmlTransient
-    public Collection<Fatura> getFaturaCollection() {
-        return faturaCollection;
-    }
-
-    public void setFaturaCollection(Collection<Fatura> faturaCollection) {
-        this.faturaCollection = faturaCollection;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -170,6 +167,24 @@ public class Produto implements Serializable {
     @Override
     public String toString() {
         return "com.mobiweb.entities.Produto[ id=" + id + ", name=" + name + " ]";
+    }
+
+
+    @XmlTransient
+    public Collection<Linhasdefatura> getLinhasdefaturaCollection() {
+        return linhasdefaturaCollection;
+    }
+
+    public void setLinhasdefaturaCollection(Collection<Linhasdefatura> linhasdefaturaCollection) {
+        this.linhasdefaturaCollection = linhasdefaturaCollection;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 
 }

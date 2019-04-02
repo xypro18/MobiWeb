@@ -50,7 +50,7 @@ public class InvoiceBean implements Serializable {
     //Adição de Fatura    
     public void addInvoice() {
         //Verifica por JPQL se já existe nome (case insensitive) associado a um empregado
-        if (dao.hasName(Fatura.class, strInv, emp)) {
+        if (dao.hasName(Fatura.class, strInv, emp.getId())) {
             produceGrowlError("record_exists");
         } else {
             //Se registo for unico fecha dialog e regista na base de dados
@@ -67,7 +67,7 @@ public class InvoiceBean implements Serializable {
     //Alteração do nome da Fatura
     public void changeInvoice() {
         //Verifica por JPQL se já existe nome (case insensitive) associado a um produto
-        if (dao.hasName(Fatura.class, strInv, emp)) {
+        if (dao.hasName(Fatura.class, strInv, emp.getId())) {
             produceGrowlError("record_exists");
         } else {
             //Se registo for unico fecha dialog e regista na base de dados
@@ -81,9 +81,9 @@ public class InvoiceBean implements Serializable {
         }
     }
 
-    //Adição de Linha de Fatura, não é feita verificação de singularidade uma vez que é opcional
+    //Adição de Linha de Fatura associada a uma fatura e um produto
     public void addLine() {
-        Linhasdefatura lf = new Linhasdefatura(strLine, getFatura(), prod);
+        Linhasdefatura lf = new Linhasdefatura(getFatura(), prod);
         dao.save(lf);
         strLine = "";
         generateLines();
@@ -162,7 +162,7 @@ public class InvoiceBean implements Serializable {
     public double getTotal() {
         total = 0;
         for (Linhasdefatura lf : lline) {
-            total += lf.getValue();
+            total += lf.getProdId().getPrice();
         }
         return total;
     }
@@ -208,14 +208,6 @@ public class InvoiceBean implements Serializable {
 
     public void setStrInv(String strInv) {
         this.strInv = strInv;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 
     public List<Linhasdefatura> getLline() {

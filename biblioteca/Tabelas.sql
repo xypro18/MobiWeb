@@ -33,12 +33,15 @@ create table SUBCATEGORIA
     CREATED TIMESTAMP,
 	MODIFIED TIMESTAMP
 );
+--Altera a partir daqui
+--Produto ganha price
 create table PRODUTO
 (
 	ID INTEGER not null primary key
 		GENERATED ALWAYS AS IDENTITY
 		(START WITH 1, INCREMENT BY 1),
 	NAME VARCHAR(30) not null,
+	PRICE DECIMAL not null, 
     EMP_ID INTEGER not null,
 	SUBCAT_ID INTEGER not null,
     FOREIGN KEY (EMP_ID) REFERENCES EMPREGADO(ID),
@@ -46,25 +49,28 @@ create table PRODUTO
 	CREATED TIMESTAMP,
 	MODIFIED TIMESTAMP
 );
+--Fatura passa a depender de empregado
 create table FATURA
 (
 	ID INTEGER not null primary key
 		GENERATED ALWAYS AS IDENTITY
 		(START WITH 1, INCREMENT BY 1),
 	NAME VARCHAR(30) not null unique,
-	PROD_ID INTEGER not null,
-	FOREIGN KEY (PROD_ID) REFERENCES PRODUTO(ID),
+	EMP_ID INTEGER not null,
+	FOREIGN KEY (EMP_ID) REFERENCES EMPREGADO(ID),
     CREATED TIMESTAMP,
 	MODIFIED TIMESTAMP
 );
+--LinhasDeFatura deixam de ter value e name e passa a referenciar produto e fatura e repetição
 create table LINHASDEFATURA
 (
 	ID INTEGER not null primary key
 		GENERATED ALWAYS AS IDENTITY
 		(START WITH 1, INCREMENT BY 1),
-	LINE VARCHAR(30),
-	VALUE DECIMAL not null, 
+	REP INTEGER not null,
+	PROD_ID INTEGER not null,
 	FAT_ID INTEGER not null,
+	FOREIGN KEY (PROD_ID) REFERENCES PRODUTO(ID),
     FOREIGN KEY (FAT_ID) REFERENCES FATURA(ID),	
     CREATED TIMESTAMP,
 	MODIFIED TIMESTAMP

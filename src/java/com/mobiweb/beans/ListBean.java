@@ -42,9 +42,10 @@ public class ListBean implements Serializable {
     public void generateProducts() {
         lprod = dao.findAll(Produto.class);
         //Manter bidirecionalidade da relação OneToMany 
-        for (Produto p : lprod) {
-            p.setFaturaCollection(dao.findByProdId(Fatura.class, p.getId()));
-        }
+        //TODO: Verificar necessidade do seguinte código
+//        for (Produto p : lprod) {
+//            p.setFaturaCollection(dao.findByProdId(Fatura.class, p.getId()));
+//        }
     }
     
     //Metodo usado para filtragem da coluna de faturas, uma vez que se trata de 

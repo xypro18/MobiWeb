@@ -42,10 +42,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Fatura.findByName", query = "SELECT f FROM Fatura f WHERE f.name = :name")
     , @NamedQuery(name = "Fatura.findByEmpId", query = "SELECT f FROM Fatura f WHERE f.empId.id = :empId")
     , @NamedQuery(name = "Fatura.hasName", query = "SELECT f FROM Fatura f WHERE lower(f.name) = lower(:name) AND f.empId.id = :id")
-    , @NamedQuery(name = "Fatura.findByProdId", query = "SELECT f FROM Fatura f WHERE f.prodId.id = :prodId")
     , @NamedQuery(name = "Fatura.findByCreated", query = "SELECT f FROM Fatura f WHERE f.created = :created")
     , @NamedQuery(name = "Fatura.findByModified", query = "SELECT f FROM Fatura f WHERE f.modified = :modified")})
 public class Fatura implements Serializable {
+
+    @JoinColumn(name = "EMP_ID", referencedColumnName = "ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Empregado empId;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -64,9 +67,6 @@ public class Fatura implements Serializable {
     @Column(name = "MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modified;
-    @JoinColumn(name = "PROD_ID", referencedColumnName = "ID")
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Produto prodId;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval=true, mappedBy = "fatId", fetch = FetchType.LAZY)
     private Collection<Linhasdefatura> linhasdefaturaCollection;
 
@@ -82,9 +82,9 @@ public class Fatura implements Serializable {
         this.name = name;
     }
 
-    public Fatura(String name, Produto prod) {
+    public Fatura(String name, Empregado emp) {
         this.name = name;
-        this.prodId = prod;
+        this.empId = emp;
     }
 
     public Integer getId() {
@@ -119,14 +119,6 @@ public class Fatura implements Serializable {
         this.modified = modified;
     }
 
-    public Produto getProdId() {
-        return prodId;
-    }
-
-    public void setProdId(Produto prodId) {
-        this.prodId = prodId;
-    }
-
     @XmlTransient
     public Collection<Linhasdefatura> getLinhasdefaturaCollection() {
         return linhasdefaturaCollection;
@@ -159,6 +151,14 @@ public class Fatura implements Serializable {
     @Override
     public String toString() {
         return "com.mobiweb.entities.Fatura[ id=" + id + ", name=" + name + " ]";
+    }
+
+    public Empregado getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(Empregado empId) {
+        this.empId = empId;
     }
 
 }

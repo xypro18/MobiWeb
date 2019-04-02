@@ -35,12 +35,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Linhasdefatura.findAll", query = "SELECT l FROM Linhasdefatura l")
     , @NamedQuery(name = "Linhasdefatura.findById", query = "SELECT l FROM Linhasdefatura l WHERE l.id = :id")
-    , @NamedQuery(name = "Linhasdefatura.findByLine", query = "SELECT l FROM Linhasdefatura l WHERE l.line = :line")
-    , @NamedQuery(name = "Linhasdefatura.findByValue", query = "SELECT l FROM Linhasdefatura l WHERE l.value = :value")
     , @NamedQuery(name = "Linhasdefatura.findByFatId", query = "SELECT l FROM Linhasdefatura l WHERE l.fatId.id = :fatId")
     , @NamedQuery(name = "Linhasdefatura.findByCreated", query = "SELECT l FROM Linhasdefatura l WHERE l.created = :created")
     , @NamedQuery(name = "Linhasdefatura.findByModified", query = "SELECT l FROM Linhasdefatura l WHERE l.modified = :modified")})
 public class Linhasdefatura implements Serializable {
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "REP")
+    private int rep;
+
+    @JoinColumn(name = "PROD_ID", referencedColumnName = "ID")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Produto prodId;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -48,13 +55,6 @@ public class Linhasdefatura implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    @Size(max = 30)
-    @Column(name = "LINE")
-    private String line;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "VALUE")
-    private double value;
     @Column(name = "CREATED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
@@ -72,15 +72,9 @@ public class Linhasdefatura implements Serializable {
         this.id = id;
     }
 
-    public Linhasdefatura(Integer id, int value) {
-        this.id = id;
-        this.value = value;
-    }
-
-    public Linhasdefatura(String line, double value, Fatura fat) {
-        this.line = line;
-        this.value = value;
+    public Linhasdefatura(Fatura fat, Produto prod) {
         this.fatId = fat;
+        this.prodId = prod;
     }
 
     public Integer getId() {
@@ -89,22 +83,6 @@ public class Linhasdefatura implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getLine() {
-        return line;
-    }
-
-    public void setLine(String line) {
-        this.line = line;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 
     public Date getCreated() {
@@ -154,6 +132,22 @@ public class Linhasdefatura implements Serializable {
     @Override
     public String toString() {
         return "com.mobiweb.entities.Linhasdefatura[ id=" + id + " ]";
+    }
+
+    public Produto getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(Produto prodId) {
+        this.prodId = prodId;
+    }
+
+    public int getRep() {
+        return rep;
+    }
+
+    public void setRep(int rep) {
+        this.rep = rep;
     }
 
 }

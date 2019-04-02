@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <br/>
+    <h:form id="frm_inv">
+        <h:panelGrid id="grid" columns="3" >
+            <p:outputLabel value="#{msg.invoice}:" style="display:block;width:120px" />
+            <p:selectOneMenu id="sel" value="#{invoice.idInv}" style="width:200px" >                                
+                <p:ajax listener="#{invoice.onInvoiceChange}" update="frm_inv" />
+                <f:selectItem itemLabel="#{msg.select} #{msg.invoice}" itemValue="" noSelectionOption="true" />
+                <f:selectItems value="#{invoice.lfat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
+            </p:selectOneMenu>
+            <p:column>
+                <p:commandButton id="btn_add" type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_invoice').show();" />
+                <p:tooltip for="btn_add" value="#{msg.add}" position="top" hideEvent="mouseout click"/>
+                <c:if test="#{invoice.idInv ne 0}">                                
+                    <p:commandButton id="btn_edit" type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_inv').show();" />
+                    <p:tooltip for="btn_edit" value="#{msg.edit}" position="top" hideEvent="mouseout click"/>
+                    <p:commandButton id="btn_move" type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
+                    <p:tooltip for="btn_move" value="#{msg.move}" position="top" hideEvent="mouseout click"/>
+                    <p:commandButton id="btn_delete" immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{invoice.deleteInvoice}" update="frm_inv"/>
+                    <p:tooltip for="btn_delete" value="#{msg.delete}" position="top" hideEvent="mouseout click"/>
+                </c:if>
+            </p:column>
+        </h:panelGrid>        
+        <br/><p:separator/><br/>
+    </h:form>
+
+    <!--Dialogs para adicionar e alterar: Faturas-->
+    <p:dialog header="#{msg.add} #{msg.invoice}" widgetVar="dlg_invoice" modal="true" resizable="false" appendTo="@(body)"> 
+        <h:form>
+            <p:outputLabel for="in" value="#{msg.add} #{msg.invoice}:" />
+            <p:inputText id="in" value="#{invoice.strInv}" required="true" />
+            <br/>
+            <p:message for="in" display="text"/>
+            <br/>
+            <p:commandButton value="#{msg.add}" action="#{invoice.addInvoice}" update=":frm_inv @form"/>
+            <p:spacer width="20" />
+            <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_invoice').hide()"/>
+        </h:form>
+    </p:dialog>
+
+    <p:dialog header="#{msg.change} #{msg.invoice}" widgetVar="dlg_change_inv" modal="true" resizable="false" appendTo="@(body)">                           
+        <h:form>
+            <p:outputLabel for="in" value="#{msg.change} #{msg.invoice}:" />
+            <p:inputText id="in" value="#{invoice.strInv}" required="true" />
+            <br/>
+            <p:message for="in" display="text"/>
+            <br/>
+            <p:commandButton value="#{msg.save}" action="#{invoice.changeInvoice}" update=":frm_inv @form"/>
+            <p:spacer width="20" />
+            <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_inv').hide()"/>
+        </h:form>
+    </p:dialog>
+
+</html>
+

@@ -13,44 +13,9 @@
         <ui:define name="center">
             
             <p:growl id="growl" showDetail="true"/>
-            <h:panelGrid columns="2" cellspacing="10">
-                <h:outputText value="#{msg.category}:  " />
-                <h:outputText value="#{invoice.prod.subcatId.catId.name}" />
-                <h:outputText value="#{msg.subcategory}:  " />
-                <h:outputText value="#{invoice.prod.subcatId.name}" />
-                <h:outputText value="#{msg.product}:  " />
-                <h:outputText value="#{invoice.prod.name}" />
-                <h:outputText value="#{msg.username}:  " />
-                <h:outputText value="#{invoice.prod.empId.username}" />
-            </h:panelGrid>
-            <br/>
-            <h:form id="frm_inv">
-                <p:outputLabel value="#{msg.invoice}:" style="display:block;width:120px" />
-                <p:selectOneMenu id="sel" value="#{invoice.idInv}" style="width:200px" >                                
-                    <p:ajax listener="#{invoice.onInvoiceChange}" update="frm_inv" />
-                    <f:selectItem itemLabel="#{msg.select} #{msg.invoice}" itemValue="" noSelectionOption="true" />
-                    <f:selectItems value="#{invoice.lfat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
-                </p:selectOneMenu>
-
-                <c:if test="#{profile.username eq invoice.prod.empId.username}">
-                    <p:commandButton id="btn_add" type="button" icon="ui-icon ui-icon-circle-plus" style="margin-left:10px;width:25px;height:25px" onclick="PF('dlg_invoice').show();" />
-                    <p:tooltip for="btn_add" value="#{msg.add}" position="top" hideEvent="mouseout click"/>
-                    <c:if test="#{invoice.idInv ne 0}">                                
-                        <p:commandButton id="btn_edit" type="button" icon="ui-icon ui-icon-pencil" style="margin-left:5px;width:25px;height:25px" onclick="PF('dlg_change_inv').show();" />
-                        <p:tooltip for="btn_edit" value="#{msg.edit}" position="top" hideEvent="mouseout click"/>
-                        <p:commandButton id="btn_move" type="button" icon="ui-icon ui-icon-extlink" style="margin-left:5px;width:25px;height:25px" />
-                        <p:tooltip for="btn_move" value="#{msg.move}" position="top" hideEvent="mouseout click"/>
-                        <p:commandButton id="btn_delete" immediate="true" icon="ui-icon ui-icon-trash" style="margin-left:5px;width:25px;height:25px" action="#{invoice.deleteInvoice}" update="frm_inv"/>
-                        <p:tooltip for="btn_delete" value="#{msg.delete}" position="top" hideEvent="mouseout click"/>
-                        <br/>
-                        <br/>
-                        <p:commandButton type="button" value="#{msg.add} #{msg.line}" onclick="PF('dlg_line').show();" />
-                    </c:if>
-                </c:if>               
-
-                <br/>
-                <br/>                
-
+            
+            <ui:include src="/templates/invoiceDropdown.xhtml"/>
+            
                 <p:remoteCommand name="refreshFooter" update="tab_invoices"/>
 
                 <p:dataTable id="tab_invoices" var="i" value="#{invoice.lline}" editable="true" style="margin-bottom:20px" rendered="#{invoice.idInv ne 0}">
@@ -90,33 +55,6 @@
                     </p:columnGroup>
                 </p:dataTable>
             </h:form>
-
-<!--        Dialogs para adicionar e alterar: Faturas e Linhas de Faturas-->
-            <p:dialog header="#{msg.add} #{msg.invoice}" widgetVar="dlg_invoice" modal="true" resizable="false" appendTo="@(body)"> 
-                <h:form>
-                    <p:outputLabel for="in" value="#{msg.add} #{msg.invoice}:" />
-                    <p:inputText id="in" value="#{invoice.strInv}" required="true" />
-                    <br/>
-                    <p:message for="in" display="text"/>
-                    <br/>
-                    <p:commandButton value="#{msg.add}" action="#{invoice.addInvoice}" update=":frm_inv @form"/>
-                    <p:spacer width="20" />
-                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_invoice').hide()"/>
-                </h:form>
-            </p:dialog>
-
-            <p:dialog header="#{msg.change} #{msg.invoice}" widgetVar="dlg_change_inv" modal="true" resizable="false" appendTo="@(body)">                           
-                <h:form>
-                    <p:outputLabel for="in" value="#{msg.change} #{msg.invoice}:" />
-                    <p:inputText id="in" value="#{invoice.strInv}" required="true" />
-                    <br/>
-                    <p:message for="in" display="text"/>
-                    <br/>
-                    <p:commandButton value="#{msg.save}" action="#{invoice.changeInvoice}" update=":frm_inv @form"/>
-                    <p:spacer width="20" />
-                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_change_inv').hide()"/>
-                </h:form>
-            </p:dialog>
 
             <p:dialog header="#{msg.add} #{msg.line}" widgetVar="dlg_line" modal="true" resizable="false" appendTo="@(body)"> 
                 <h:form>

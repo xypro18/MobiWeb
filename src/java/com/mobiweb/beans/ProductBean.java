@@ -26,7 +26,7 @@ public class ProductBean implements Serializable {
     private String strCat;
     private String strSub;
     private String strProd;
-    private double value;
+    private double price;
     private List<Categoria> lcat = null;
     private List<Subcategoria> lsub = null;
     private List<Produto> lprod = null;
@@ -83,11 +83,11 @@ public class ProductBean implements Serializable {
             produceGrowlError("record_exists");
         } else {
             RequestContext.getCurrentInstance().execute("PF('dlg_prod').hide()");
-            Produto p = new Produto(strProd, value, getSubcategory(), profile.getEmp());
+            Produto p = new Produto(strProd, price, getSubcategory(), profile.getEmp());
             dao.save(p);
             generateProducts();
             strProd = "";
-            value = 0.0;
+            price = 0.0;
         }
     }
 
@@ -290,5 +290,13 @@ public class ProductBean implements Serializable {
     public void setStrCat(String strCat) {
         this.strCat = strCat;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }   
 
 }
