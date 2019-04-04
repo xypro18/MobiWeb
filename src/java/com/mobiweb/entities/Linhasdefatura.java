@@ -76,6 +76,11 @@ public class Linhasdefatura implements Serializable {
     public Linhasdefatura(Fatura fat, Produto prod) {
         this.fatId = fat;
         this.prodId = prod;
+        this.rep = 1;
+    }
+    
+    public void incrementRep() {
+        rep++;
     }
 
     public Integer getId() {

@@ -38,6 +38,9 @@ public class ProductBean implements Serializable {
     //Injeta o bean do perfil para associar o utilizador ao produto
     @Inject
     ProfileBean profile;
+    
+    @Inject
+    InvoiceBean invoice;
 
     //Gera categorias após construção de bean, as subcategorias e produtos só 
     //aparecem após selecções sucessivas

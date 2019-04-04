@@ -45,7 +45,8 @@ public class InvoiceBean implements Serializable {
     public void init() {
         //TODO: Verificar se alteração de empregado atualiza o atributo
         emp = profile.getEmp();
-       
+        generateInvoices();
+
     }
 
     //Adição de Fatura    
@@ -122,15 +123,27 @@ public class InvoiceBean implements Serializable {
 
     //Aceita produto e gera Faturas e linhas associadas
     //TODO: Fiquei por aqui
-    public String addProduct(Produto p) {
-        //idInv = i;
+    public void addProduct(Produto p) {
+        
+        if (idInv == 0) {
+            produceGrowlError("no_invoice");
+            return;
+        }
+        
         generateLines();
+        
         for (Linhasdefatura lf : lline) {
-            if (lf.getProdId().getId() != p.getId()) {
-            } else {
-             }
-
-        return "invoice";
+            if (lf.getProdId().getId().intValue() == p.getId().intValue()) {
+                lf.incrementRep();
+                dao.update(lf);
+                produceGrowlInfo("product_added");
+                return;
+            }
+        }
+        
+        Linhasdefatura l = new Linhasdefatura(getFatura(), p);
+        dao.save(l);
+        produceGrowlInfo("product_added");
     }
 
     //Obtém fatura
@@ -154,6 +167,7 @@ public class InvoiceBean implements Serializable {
     private void produceGrowlInfo(String msg) {
         ResourceBundle rb = ResourceBundle.getBundle("com.mobiweb.resources.messages", FacesContext.getCurrentInstance().getViewRoot().getLocale());
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, rb.getString("info"), rb.getString(msg)));
+        RequestContext.getCurrentInstance().update("growl");
     }
 
     //Método que produz mensagens de erro
