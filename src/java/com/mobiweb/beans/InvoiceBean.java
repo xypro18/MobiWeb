@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -124,14 +125,14 @@ public class InvoiceBean implements Serializable {
     //Aceita produto e gera Faturas e linhas associadas
     //TODO: Fiquei por aqui
     public void addProduct(Produto p) {
-        
+
         if (idInv == 0) {
             produceGrowlError("no_invoice");
             return;
         }
-        
+
         generateLines();
-        
+
         for (Linhasdefatura lf : lline) {
             if (lf.getProdId().getId().intValue() == p.getId().intValue()) {
                 lf.incrementRep();
@@ -140,14 +141,14 @@ public class InvoiceBean implements Serializable {
                 return;
             }
         }
-        
+
         Linhasdefatura l = new Linhasdefatura(getFatura(), p);
         dao.save(l);
         produceGrowlInfo("product_added");
     }
 
     //Obtém fatura
-    private Fatura getFatura() {
+    public Fatura getFatura() {
         return (Fatura) dao.findOne(Fatura.class, idInv);
     }
 
@@ -181,7 +182,7 @@ public class InvoiceBean implements Serializable {
     public double getTotal() {
         total = 0;
         for (Linhasdefatura lf : lline) {
-            total += lf.getProdId().getPrice();
+            total += lf.getTotalPrice();
         }
         return total;
     }

@@ -34,11 +34,11 @@ public class ProductBean implements Serializable {
     //Objeto DAO que faz persistência e leitura da base de dados
     @Inject
     GenericJpaDao dao;
-    
+
     //Injeta o bean do perfil para associar o utilizador ao produto
     @Inject
     ProfileBean profile;
-    
+
     @Inject
     InvoiceBean invoice;
 
@@ -48,9 +48,9 @@ public class ProductBean implements Serializable {
     public void init() {
         generateCategories();
     }
-    
+
     //Adiciona Categoria, caso já exista (case insensitive) envia mensagem de erro 
-   public void addCategory() {
+    public void addCategory() {
         if (dao.hasName(Categoria.class, strCat)) {
             produceGrowlError("record_exists");
         } else {
@@ -65,7 +65,7 @@ public class ProductBean implements Serializable {
         }
     }
 
-   //Adiciona Subcategoria, caso já exista (case insensitive) envia mensagem de erro 
+    //Adiciona Subcategoria, caso já exista (case insensitive) envia mensagem de erro 
     public void addSubCategory() {
         if (dao.hasName(Subcategoria.class, strSub, idCat)) {
             produceGrowlError("record_exists");
@@ -145,17 +145,17 @@ public class ProductBean implements Serializable {
     private void generateCategories() {
         lcat = dao.findAll(Categoria.class);
     }
-    
+
     //Leitura de todas as Subcategorias associadas a uma Categoria na base de dados
     private void generateSubcategories() {
         lsub = dao.findByCatId(Subcategoria.class, idCat);
     }
-    
+
     //Leitura de todos os Produtos associados a uma Subcategoria na base de dados
     private void generateProducts() {
         lprod = dao.findBySubcatId(Produto.class, idSub);
     }
-    
+
     //Atualiza Subcategoria se Categoria muda, método associado à View
     public void onCategoryChange() {
         if (idCat != 0) {
@@ -181,16 +181,12 @@ public class ProductBean implements Serializable {
         return (Subcategoria) dao.findOne(Subcategoria.class, idSub);
     }
 
-    //Método que edita tabela de Produtos, não permite repetição de nomes (case insensitive)
+    //Método que edita tabela de Produtos
     public void onRowEdit(RowEditEvent event) {
         Produto p = (Produto) event.getObject();
-        if (dao.hasName(Produto.class, p.getName(), idSub)) {
-            produceGrowlError("record_exists");
-            generateProducts();
-        } else {
-            dao.update(p);
-            produceGrowlInfo("change_success");
-        }
+        dao.update(p);
+        produceGrowlInfo("change_success");
+
     }
 
     //Método que cancela edição da tabela de linhas de fatura
@@ -300,6 +296,6 @@ public class ProductBean implements Serializable {
 
     public void setPrice(double price) {
         this.price = price;
-    }   
+    }
 
 }

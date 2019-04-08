@@ -10,7 +10,7 @@
         <h:panelGrid id="grid" columns="3" >
             <p:outputLabel value="#{msg.invoice}:" style="display:block;width:120px" />
             <p:selectOneMenu id="sel" value="#{invoice.idInv}" style="width:200px" >                                
-                <p:ajax listener="#{invoice.onInvoiceChange}" update="frm_inv" />
+                <p:ajax listener="#{invoice.onInvoiceChange}" update="frm_inv #{view.findComponent('frm_tab_inv').id}" />
                 <f:selectItem itemLabel="#{msg.select} #{msg.invoice}" itemValue="" noSelectionOption="true" />
                 <f:selectItems value="#{invoice.lfat}" var="n" itemValue="#{n.id}" itemLabel="#{n.name}" />
             </p:selectOneMenu>

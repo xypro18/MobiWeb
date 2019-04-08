@@ -85,11 +85,11 @@
                     <p:column headerText="#{msg.name}">
                         <p:cellEditor>
                             <f:facet name="output"><h:outputText value="#{p.name}" /></f:facet>
-                            <f:facet name="input"><p:inputText value="#{p.name}" style="width:100%" label="Year"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{p.name}" /></f:facet>
                         </p:cellEditor>
                     </p:column>
 
-                    <p:column style="width:200px" headerText="#{msg.price} [€]">
+                    <p:column style="width:200px" headerText="#{msg.price_un} [€]">
                         <p:cellEditor>
                             <f:facet name="output"><h:outputText value="#{p.price}" /></f:facet>
                             <f:facet name="input"><p:inputNumber value="#{p.price}" style="width:100%" decimalSeparator="," thousandSeparator="." /></f:facet>

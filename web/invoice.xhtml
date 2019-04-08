@@ -6,16 +6,17 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
-<!--Vista que permite a gestão de faturas-->
+
+    <!--Vista que permite a gestão de faturas-->
     <ui:composition template="/templates/masterLayout.xhtml">
         <ui:define name="north_page">#{msg.man_invoice}</ui:define>
         <ui:define name="center">
-            
+
             <p:growl id="growl" showDetail="true"/>
-            
+
             <ui:include src="/templates/invoiceDropdown.xhtml"/>
-            
+
+            <h:form id="frm_tab_inv">
                 <p:remoteCommand name="refreshFooter" update="tab_invoices"/>
 
                 <p:dataTable id="tab_invoices" var="i" value="#{invoice.lline}" editable="true" style="margin-bottom:20px" rendered="#{invoice.idInv ne 0}">
@@ -29,50 +30,33 @@
                     <p:column style="width:100px;text-align:center" headerText="#{msg.id}">
                         <h:outputText value="#{i.id}" />
                     </p:column>
-                    <p:column headerText="#{msg.name}">
+                    <p:column headerText="#{msg.product}">
+                        <h:outputText value="#{i.prodId.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.quantity}">
                         <p:cellEditor>
-                            <f:facet name="output"><h:outputText value="#{i.line}" /></f:facet>
-                            <f:facet name="input"><p:inputText value="#{i.line}" style="width:100%"/></f:facet>
+                            <f:facet name="output"><h:outputText value="#{i.rep}" /></f:facet>
+                            <f:facet name="input"><p:inputText value="#{i.rep}" /></f:facet>
                         </p:cellEditor>
                     </p:column>
-                    <p:column style="width:200px" headerText="#{msg.value} [€]">
-                        <p:cellEditor>
-                            <f:facet name="output"><h:outputText value="#{i.value}" /></f:facet>
-                            <f:facet name="input"><p:inputNumber value="#{i.value}" style="width:100%" decimalSeparator="," thousandSeparator="." /></f:facet>
-                        </p:cellEditor>
+                    <p:column style="width:200px" headerText="#{msg.price_un} [€]">
+                        <h:outputText value="#{i.prodId.price}" />
+                    </p:column>
+                    <p:column style="width:200px" headerText="#{msg.price} [€]">
+                        <h:outputText value="#{i.totalPrice}" />
                     </p:column>
                     <p:column style="width:50px">
-                        <ui:fragment rendered="#{profile.username eq invoice.prod.empId.username}">
-                            <p:rowEditor/>
-                            <p:commandLink styleClass="ui-icon ui-icon-trash" action="#{invoice.removeLine(i.id)}" update="tab_invoices"/>
-                        </ui:fragment> 
+                        <p:rowEditor/>
+                        <p:commandLink styleClass="ui-icon ui-icon-trash" action="#{invoice.removeLine(i.id)}" update="tab_invoices"/>
                     </p:column>
                     <p:columnGroup type="footer" rendered="#{invoice.lline.size() gt 0}">
                         <p:row>
-                            <p:column colspan="2" footerText="#{msg.total}: " style="text-align:right" />
+                            <p:column colspan="4" footerText="#{msg.total}: " style="text-align:right" />
                             <p:column colspan="2" footerText="#{invoice.total}" style="text-align:left" />                         
                         </p:row>
                     </p:columnGroup>
                 </p:dataTable>
             </h:form>
-
-            <p:dialog header="#{msg.add} #{msg.line}" widgetVar="dlg_line" modal="true" resizable="false" appendTo="@(body)"> 
-                <h:form>
-                    <h:panelGrid columns="2">
-                        <p:outputLabel value="#{msg.add} #{msg.line}:" />
-                        <p:inputText value="#{invoice.strLine}" />
-
-                        <p:outputLabel for="in" value="#{msg.add} #{msg.value}:" />
-                        <p:inputNumber id="in" value="#{invoice.value}" symbol=" €" symbolPosition="s" 
-                                       decimalSeparator="," thousandSeparator="." required="true" />  
-                    </h:panelGrid>
-                    <p:message for="in" display="text"/>
-                    <br/>
-                    <p:commandButton value="#{msg.add}" action="#{invoice.addLine}"  oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dlg_line').hide()" update=":frm_inv @form"/>
-                    <p:spacer width="20" />
-                    <p:commandButton value="#{msg.cancel}" type="reset" onclick="PF('dlg_line').hide()"/>
-                </h:form>
-            </p:dialog>
         </ui:define>
     </ui:composition>
 </html>

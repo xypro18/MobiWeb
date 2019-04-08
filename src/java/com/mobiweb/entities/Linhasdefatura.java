@@ -82,6 +82,10 @@ public class Linhasdefatura implements Serializable {
     public void incrementRep() {
         rep++;
     }
+    
+    public double getTotalPrice() {
+        return rep*prodId.getPrice();
+    }
 
     public Integer getId() {
         return id;
