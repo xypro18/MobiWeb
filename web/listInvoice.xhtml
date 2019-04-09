@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <!--Vista que define a listagem global de Faturas-->
+    <ui:composition template="/templates/masterLayout.xhtml">
+        <ui:define name="north_page">#{msg.list_inv}</ui:define>
+        <ui:define name="center">
+            <h:form id="frm_list">
+                <p:dataTable id="eventsDT" var="f" value="#{list.lfat}" widgetVar="fatTable" 
+                             filteredValue="#{list.filteredFat}" emptyMessage="#{msg.notfound_invoice}">
+                    <f:facet name="header">
+                        #{msg.list_inv}
+                    </f:facet>
+                    <p:column style="width:150px;text-align:center" headerText="#{msg.invoice} #{msg.id}" filterBy="#{f.id}" filterMatchMode="exact">
+                        <h:outputText value="#{f.id}" />
+                    </p:column>
+                    <p:column headerText="#{msg.manager}" filterBy="#{f.empId.username}" filterMatchMode="contains">
+                        <h:outputText value="#{f.empId.username}" />
+                    </p:column>
+                    <p:column headerText="#{msg.name}" filterBy="#{f.name}" filterMatchMode="contains">
+                        <h:outputText value="#{f.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.line}" >
+                        <p:commandButton icon="ui-icon ui-icon-search" action="#{invoice.acceptProduct(0)}" rendered="#{empty p.faturaCollection}" style="width:20px;height:20px;margin:5px 10px;" >
+                            <f:setPropertyActionListener value="#{p}" target="#{invoice.prod}" />
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

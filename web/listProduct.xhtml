@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+<!--Vista que define a listagem global de Produtos-->
+    <ui:composition template="/templates/masterLayout.xhtml">
+        <ui:define name="north_page">#{msg.list_prod}</ui:define>
+        <ui:define name="center">
+            <h:form id="frm_list">
+                <p:dataTable id="eventsDT" var="p" value="#{list.lprod}" widgetVar="prodTable" 
+                             filteredValue="#{list.filteredProd}" emptyMessage="#{msg.notfound_product}">
+                    <f:facet name="header">
+                        #{msg.list_prod}
+                    </f:facet>
+                    <p:column style="width:150px;text-align:center" headerText="#{msg.product} #{msg.id}" filterBy="#{p.id}" filterMatchMode="exact">
+                        <h:outputText value="#{p.id}" />
+                    </p:column>
+                    <p:column headerText="#{msg.category}" filterBy="#{p.subcatId.catId.name}" filterMatchMode="contains">
+                        <h:outputText value="#{p.subcatId.catId.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.subcategory}" filterBy="#{p.subcatId.name}" filterMatchMode="contains">
+                        <h:outputText value="#{p.subcatId.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.product}" filterBy="#{p.name}" filterMatchMode="contains">
+                        <h:outputText value=" #{p.name}" />
+                    </p:column>
+                    <p:column headerText="#{msg.manager}" filterBy="#{p.empId.username}" filterMatchMode="contains">
+                        <h:outputText value="#{p.empId.username}" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

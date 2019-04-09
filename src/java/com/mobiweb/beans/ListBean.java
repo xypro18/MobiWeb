@@ -20,7 +20,13 @@ public class ListBean implements Serializable {
     private List<Produto> lprod = null;
     //Atributo que permite fazer filtragem na tabela
     private List<Produto> filteredProd = null;
-    private Produto prod = null;    
+    //TODO: Ver necessidade do produto
+    //private Produto prod = null;
+
+    //Atributos associados à Fatura que são utilizados para gerar a tabela
+    private List<Fatura> lfat = null;
+    //Atributo que permite fazer filtragem na tabela
+    private List<Fatura> filteredFat = null;
 
     //Objeto DAO que faz persistência e leitura da base de dados
     @Inject
@@ -33,9 +39,15 @@ public class ListBean implements Serializable {
     }
     
     //Método invocado pela View do Menu, atualiza a lista de Produtos e retorna a View da Listagem Global
-    public String navigate() {
+    public String navigateProduct() {
         generateProducts();
-        return "list";
+        return "listProduct";
+    }
+    
+    //Método invocado pela View do Menu, atualiza a lista de Faturas e retorna a View da Listagem Global
+    public String navigateInvoice() {
+        generateInvoices();
+        return "listInvoice";
     }
     
     //Método que obtém produtos atualizados da base de dados
@@ -48,16 +60,22 @@ public class ListBean implements Serializable {
 //        }
     }
     
+    //Método que obtém Faturas atualizadas da base de dados
+    public void generateInvoices() {
+        lprod = dao.findAll(Fatura.class);
+    }
+    
     //Metodo usado para filtragem da coluna de faturas, uma vez que se trata de 
     //uma lista dentro de uma lista, obtém todos os itens numa unica string.
-    public String createInvoiceList(Collection<Fatura> lfat) {
-        StringBuilder sb = new StringBuilder();
-        for (Fatura f : lfat) {
-            sb.append(f.getName());
-            sb.append(" ");
-        }
-        return sb.toString();
-    }
+    //TODO: Ver necessidade do seguinte método
+//    public String createInvoiceList(Collection<Fatura> lfat) {
+//        StringBuilder sb = new StringBuilder();
+//        for (Fatura f : lfat) {
+//            sb.append(f.getName());
+//            sb.append(" ");
+//        }
+//        return sb.toString();
+//    }
 
     /////////////////////
     //GETTERS E SETTERS//
@@ -71,13 +89,13 @@ public class ListBean implements Serializable {
         this.lprod = lprod;
     }
 
-    public Produto getProd() {
-        return prod;
-    }
-
-    public void setProd(Produto prod) {
-        this.prod = prod;
-    }
+//    public Produto getProd() {
+//        return prod;
+//    }
+//
+//    public void setProd(Produto prod) {
+//        this.prod = prod;
+//    }
 
     public List<Produto> getFilteredProd() {
         return filteredProd;
@@ -86,5 +104,20 @@ public class ListBean implements Serializable {
     public void setFilteredProd(List<Produto> filteredProd) {
         this.filteredProd = filteredProd;
     }   
-    
+
+    public List<Fatura> getLfat() {
+        return lfat;
+    }
+
+    public void setLfat(List<Fatura> lfat) {
+        this.lfat = lfat;
+    }
+
+    public List<Fatura> getFilteredFat() {
+        return filteredFat;
+    }
+
+    public void setFilteredFat(List<Fatura> filteredFat) {
+        this.filteredFat = filteredFat;
+    }
 }
