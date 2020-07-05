@@ -62,7 +62,7 @@ public class ListBean implements Serializable {
     
     //Método que obtém Faturas atualizadas da base de dados
     public void generateInvoices() {
-        lprod = dao.findAll(Fatura.class);
+        lfat = dao.findAll(Fatura.class);
     }
     
     //Metodo usado para filtragem da coluna de faturas, uma vez que se trata de 
