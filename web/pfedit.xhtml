@@ -24,9 +24,12 @@
                         <f:selectItem itemLabel="#{msg.female}" itemValue="F" />
                     </p:selectOneRadio>
                     <p:message for="sex" display="text"/>
-                    <p:outputLabel for="popup" value="#{msg.date_birth}:" />
-                    <p:calendar id="popup" value="#{profile.emp.dateofbirth}" pattern="dd/MM/yyyy" required="true" />
-                    <p:message for="popup" display="text"/>
+<!--                    <p:outputLabel for="popup" value="#{msg.date_birth}:" />
+                    <p:calendar id="popup" value="#{profile.emp.dateofbirth}" pattern="dd/MM/yyyy" required="true" /> -->
+                    <p:message for="dateOfBirth" display="text"/>
+                    <h:inputText id="dateOfBirth" value="#{profile.emp.dateofbirth}" >
+                        <f:convertDateTime pattern="dd-mm-yyyy"/>
+                    </h:inputText>
                     <p:outputLabel for="role" value="#{msg.role}:" />
                     <p:selectOneRadio id="role" value="#{profile.emp.role}" required="true" >
                         <f:selectItem itemLabel="#{msg.admin}" itemValue="Administrator" />

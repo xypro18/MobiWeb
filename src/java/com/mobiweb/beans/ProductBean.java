@@ -1,13 +1,17 @@
 package com.mobiweb.beans;
 
 import com.mobiweb.dao.GenericJpaDao;
+import com.mobiweb.ejbs.CustomerService;
+import com.mobiweb.ejbs.HRService;
 import com.mobiweb.entities.Categoria;
 import com.mobiweb.entities.Produto;
 import com.mobiweb.entities.Subcategoria;
+import com.mobiweb.exceptions.AppException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -41,22 +45,30 @@ public class ProductBean implements Serializable {
 
     @Inject
     InvoiceBean invoice;
-
+    
+    @EJB
+    CustomerService customerService;
+    
+    @EJB
+    HRService hRService;
+    
     //Gera categorias após construção de bean, as subcategorias e produtos só 
     //aparecem após selecções sucessivas
     @PostConstruct
-    public void init() {
+        public void init() {
         generateCategories();
     }
 
     //Adiciona Categoria, caso já exista (case insensitive) envia mensagem de erro 
-    public void addCategory() {
+    public void addCategory() throws AppException {
         if (dao.hasName(Categoria.class, strCat)) {
             produceGrowlError("record_exists");
         } else {
             RequestContext.getCurrentInstance().execute("PF('dlg_cat').hide()");
-            Categoria cat = new Categoria(strCat);
-            dao.save(cat);
+//            Categoria cat = new Categoria(strCat);
+//            dao.save(cat);
+            //Categoria cat = customerService.addCategory(strCat);
+            Categoria cat = hRService.updateCategory(strCat);
             generateCategories();
             idCat = cat.getId();
             strCat = "";
